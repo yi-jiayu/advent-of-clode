@@ -1,4 +1,4 @@
-(ns aoc2015.day01)
+(ns aoc.year2015.day01)
 
 (def left-parens \()
 (def right-parens \))

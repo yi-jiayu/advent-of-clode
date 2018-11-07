@@ -1,7 +1,7 @@
-(ns aoc2015.day02-test
+(ns aoc.year2015.day02-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
-            [aoc2015.day02 :refer :all]))
+            [aoc.year2015.day02 :refer :all]))
 
 (def input (slurp (io/resource "day02.txt")))
 

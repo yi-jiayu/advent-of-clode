@@ -1,4 +1,4 @@
-(ns aoc2015.core-test
+(ns aoc.year2015.core-test
   (:require [clojure.test :refer :all]))
 
 (deftest a-test

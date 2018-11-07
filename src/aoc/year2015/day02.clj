@@ -1,4 +1,4 @@
-(ns aoc2015.day02
+(ns aoc.year2015.day02
     (:require [clojure.string :refer [split split-lines]]))
 
 (defn parse-lwh [s]

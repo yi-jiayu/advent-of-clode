@@ -1,4 +1,4 @@
-(ns aoc2015.core)
+(ns aoc.year2015.core)
 
 (defn foo
   "I don't do a whole lot."
