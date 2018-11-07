@@ -3,10 +3,10 @@
             [clojure.java.io :as io]
             [aoc.year2015.day02 :refer :all]))
 
-(def input (slurp (io/resource "day02.txt")))
+(def input (slurp (io/resource "year2015/day02.txt")))
 
 (deftest test-parse-lwh
-  (is (= '(2 3 4) (parse-lwh "2x3x4"))))\
+  (is (= '(2 3 4) (parse-lwh "2x3x4"))))
 
 (deftest test-parse-input
   (is (= '('(2 3 4) '(1 1 10) (parse-input "2x3x4\n1x1x10")))))

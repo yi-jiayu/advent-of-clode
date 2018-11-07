@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [aoc.year2015.day01 :refer :all]))
 
-(def input (slurp (io/resource "day01.txt")))
+(def input (slurp (io/resource "year2015/day01.txt")))
 
 (deftest test-final-floor
   (testing "example inputs"
