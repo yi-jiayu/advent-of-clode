@@ -9,7 +9,7 @@
   (is (= '(2 3 4) (parse-lwh "2x3x4"))))
 
 (deftest test-parse-input
-  (is (= '('(2 3 4) '(1 1 10) (parse-input "2x3x4\n1x1x10")))))
+  (is (= '((2 3 4) (1 1 10)) (parse-input "2x3x4\n1x1x10"))))
 
 (deftest test-surface-area
   (is (= 52 (surface-area '(2 3 4))))
