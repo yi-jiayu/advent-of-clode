@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/yi-jiayu/advent-of-clode.svg?branch=master)](https://travis-ci.com/yi-jiayu/advent-of-clode)
+[![codecov](https://codecov.io/gh/yi-jiayu/advent-of-clode/branch/master/graph/badge.svg)](https://codecov.io/gh/yi-jiayu/advent-of-clode)
+
 # aoc
 
 A Clojure library designed to ... well, that part is up to you.
