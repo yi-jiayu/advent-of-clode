@@ -38,3 +38,15 @@
                                    (remove explored (neighbours fav curr))))]
           (recur frontier
                  (conj explored curr)))))))
+
+(defn explore [fav steps]
+  (loop [frontier (conj clojure.lang.PersistentQueue/EMPTY [[1 1] 0])
+         explored #{}]
+    (let [[curr depth] (peek frontier) frontier (pop frontier)]
+      (if (> depth steps)
+        (count explored)
+        (let [frontier (apply (partial conj frontier)
+                              (map #(vector % (+ depth 1))
+                                   (remove explored (neighbours fav curr))))]
+          (recur frontier
+                 (conj explored curr)))))))

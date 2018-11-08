@@ -29,4 +29,8 @@
 (deftest test-path-to
   (is (= 11 (steps-to 10 [7 4])))
   (testing "actual input"
-           (is (= 90 (steps-to input [31 39])))))
+    (is (= 90 (steps-to input [31 39])))))
+
+(deftest test-explore
+  (testing "actual input"
+    (is (= 135 (explore input 50)))))
