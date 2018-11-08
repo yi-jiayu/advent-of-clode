@@ -23,3 +23,7 @@
 (deftest test-fewest-steps-to-reach
   (testing "actual input"
     (is (= 675 (fewest-steps-to-reach (parse-input input))))))
+
+(deftest test-max-distance
+  (testing "actual input"
+    (is (= 1424 (max-distance (parse-input input))))))
