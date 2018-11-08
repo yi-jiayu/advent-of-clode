@@ -10,7 +10,7 @@
 (defn move [pos direction]
   (add-pair pos (direction-map direction)))
 
-(defn walk [steps]
+(defn walk-from-origin [steps]
   (reduce move [0 0] steps))
 
 (defn distance
@@ -23,9 +23,9 @@
   (map keyword (split input #",")))
 
 (defn fewest-steps-to-reach [path]
-  (distance (walk path)))
+  (distance (walk-from-origin path)))
 
-(defn max-distance
+(defn max-distance-from-origin
   "Returns the furthest Manhattan distance from the origin reached along `path`."
   [path]
   (second (reduce
