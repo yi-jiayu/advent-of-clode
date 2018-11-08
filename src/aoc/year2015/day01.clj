@@ -4,7 +4,11 @@
 (def right-parens \))
 
 (defn final-floor [instructions]
-  (- (count instructions) (* 2 (count (filter (partial = right-parens) instructions)))))
+  (reduce #(condp = %2
+             left-parens (+ %1 1)
+             right-parens (- %1 1))
+          0
+          instructions))
 
 (defn first-step-into-basement [instructions]
   (loop [position 0

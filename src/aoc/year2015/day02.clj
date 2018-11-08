@@ -8,13 +8,11 @@
   (let [lines (split-lines input)]
     (map parse-lwh lines)))
 
-(defn surface-area [lwh]
-  (let [[l w h] lwh]
-    (* 2 (+ (* l w) (* w h) (* h l)))))
+(defn surface-area [[l w h]]
+    (* 2 (+ (* l w) (* w h) (* h l))))
 
-(defn smallest-side [lwh]
-  (let [[l w h] lwh]
-    (min (* l w) (* w h) (* h l))))
+(defn smallest-side [[l w h]]
+    (min (* l w) (* w h) (* h l)))
 
 (defn wrapping-paper-required [lwh]
   (+ (surface-area lwh) (smallest-side lwh)))
