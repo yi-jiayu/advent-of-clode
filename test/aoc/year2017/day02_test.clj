@@ -12,6 +12,14 @@
 (deftest test-parse-spreadsheet
   (is (= '((5 9 2 8) (9 4 7 3) (3 8 6 5)) (parse-spreadsheet "5 9 2 8\n9 4 7 3\n3 8 6 5"))))
 
+(deftest test-line-checksum
+  (is (= 8 (line-checksum '(5 1 9 5)))))
+
+(deftest test-spreadsheet-checksum
+  (is (= 18 (spreadsheet-checksum '((5 1 9 5) (7 5 3) (2 4 6 8)))))
+  (testing "actual input"
+    (is (= 21845 (spreadsheet-checksum (parse-spreadsheet input))))))
+
 (deftest test-find-result
   (is (= 4 (find-result '(5 9 2 8))))
   (is (= 3 (find-result '(9 4 7 3))))
