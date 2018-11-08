@@ -1,12 +1,12 @@
 (ns aoc.year2015.day02
-    (:require [clojure.string :refer [split split-lines]]))
+  (:require [clojure.string :refer [split split-lines]]))
 
 (defn parse-lwh [s]
   (map #(Integer/parseInt %) (split s #"x")))
 
 (defn parse-input [input]
   (let [lines (split-lines input)]
-       (map parse-lwh lines)))
+    (map parse-lwh lines)))
 
 (defn surface-area [lwh]
   (let [[l w h] lwh]

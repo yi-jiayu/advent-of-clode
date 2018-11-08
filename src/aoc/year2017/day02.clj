@@ -1,5 +1,5 @@
 (ns aoc.year2017.day02
-    (:require [clojure.string :refer [split split-lines]]))
+  (:require [clojure.string :refer [split split-lines]]))
 
 (defn parse-row [row]
   (map #(Integer/parseInt %) (split row #"\s+")))
