@@ -15,8 +15,8 @@
 
 (defn distance
   "Returns the Manhattan distance from the origin to point (x, y) on a hexgrid."
-  [[x y]]
-  (let [z (- 0 x y)]
+  [[^Integer x ^Integer y]]
+  (let [^Integer z (- 0 x y)]
     (max (Math/abs x) (Math/abs y) (Math/abs z))))
 
 (defn parse-input [input]
@@ -29,10 +29,10 @@
   "Returns the furthest Manhattan distance from the origin reached along `path`."
   [path]
   (second (reduce
-           (fn [[xy max-dist] direction]
-             (let [xy (move xy direction)
-                   dist (distance xy)
-                   max-dist (if (> dist max-dist) dist max-dist)]
-               (vector xy max-dist)))
-           [[0 0] 0]
-           path)))
+            (fn [[xy max-dist] direction]
+              (let [xy (move xy direction)
+                    dist (distance xy)
+                    max-dist (if (> dist max-dist) dist max-dist)]
+                (vector xy max-dist)))
+            [[0 0] 0]
+            path)))
