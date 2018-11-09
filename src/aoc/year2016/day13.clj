@@ -1,4 +1,5 @@
-(ns aoc.year2016.day13)
+(ns aoc.year2016.day13
+  (:import (clojure.lang PersistentQueue)))
 
 (defn calculate-z-value [x y]
   (+ (* x x) (* 3 x) (* 2 x y) y (* y y)))
@@ -28,7 +29,7 @@
           (adjacent xy)))
 
 (defn steps-to [fav dest]
-  (loop [frontier (conj clojure.lang.PersistentQueue/EMPTY [[1 1] 0])
+  (loop [frontier (conj PersistentQueue/EMPTY [[1 1] 0])
          explored #{}]
     (let [[curr depth] (peek frontier) frontier (pop frontier)]
       (if (= dest curr)
@@ -40,7 +41,7 @@
                  (conj explored curr)))))))
 
 (defn explore [fav steps]
-  (loop [frontier (conj clojure.lang.PersistentQueue/EMPTY [[1 1] 0])
+  (loop [frontier (conj PersistentQueue/EMPTY [[1 1] 0])
          explored #{}]
     (let [[curr depth] (peek frontier) frontier (pop frontier)]
       (if (> depth steps)
