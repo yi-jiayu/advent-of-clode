@@ -14,7 +14,7 @@
   [r t]
   (let [r' (- r 1)
         positions (into [] (concat (range r') (range r' 0 -1)))]
-    (get positions (rem t (* 2 r')))))
+    (nth positions (rem t (* 2 r')))))
 
 (defn severity
   [[depth range]]

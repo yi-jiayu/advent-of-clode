@@ -10,7 +10,7 @@
   (let [halfway (/ (count captcha) 2)]
     (apply + (map-indexed
               #(let [index-halfway-around (mod (+ %1 halfway) (count captcha))
-                     digit-halfway-around (get captcha index-halfway-around)]
+                     digit-halfway-around (nth captcha index-halfway-around)]
                  (if (= %2 digit-halfway-around)
                    (Character/digit %2 10)
                    0))
