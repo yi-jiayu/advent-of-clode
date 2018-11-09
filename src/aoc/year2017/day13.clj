@@ -16,25 +16,26 @@
         positions (into [] (concat (range r') (range r' 0 -1)))]
     (get positions (rem t (* 2 r')))))
 
-(defn calculate-severity
+(defn severity
+  [[depth range]]
+  (if (= 0 (scanner-position range depth))
+    (* range depth)
+    0))
+
+(defn total-severity
   "Calculates the total severity of a trip through a firewall."
   [firewall]
-  (apply + (map (fn [[depth range]]
-                  (if (= 0 (scanner-position range depth))
-                    (* range depth)
-                    0))
-                firewall)))
+  (apply + (map severity firewall)))
 
-(defn caught?
-  "Returns true if you get caught passing through `firewall` after `delay`."
+(defn not-caught?
+  "Returns true if you do not get caught while passing through `firewall` after `delay`."
   [firewall delay]
-  (not (not-any? (fn [[depth range]]
-                   (= 0 (scanner-position range (+ depth delay))))
-                 firewall)))
+  (not-any? (fn [[depth range]]
+              (= 0 (scanner-position range (+ depth delay))))
+            firewall))
 
 (defn find-minimum-delay
   [firewall]
-  (loop [delay 0]
-    (if (caught? firewall delay)
-      (recur (+ 1 delay))
-      delay)))
+  ; sorting shorter periods first allows the not-caught? computation to short-circuit earlier
+  (let [firewall (sort-by second firewall)]
+    (first (filter (partial not-caught? firewall) (range)))))

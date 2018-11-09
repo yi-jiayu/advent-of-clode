@@ -16,16 +16,17 @@
   (is (= 0 (scanner-position 4 6)))
   (is (= 1 (scanner-position 4 7))))
 
-(deftest test-calculate-severity
-  (is (= 24 (calculate-severity (initialise-firewall example-input))))
-  (is (= 632 (calculate-severity (initialise-firewall input)))))
+(deftest test-severity
+  (is (= 24 (severity [6 4]))))
 
-(deftest test-caught?
-  (is (caught? (initialise-firewall example-input) 0))
-  (is (not (caught? (initialise-firewall example-input) 10))))
+(deftest test-total-severity
+  (is (= 24 (total-severity (initialise-firewall example-input))))
+  (is (= 632 (total-severity (initialise-firewall input)))))
+
+(deftest test-not-caught?
+  (is (not (not-caught? (initialise-firewall example-input) 0)))
+  (is (not-caught? (initialise-firewall example-input) 10)))
 
 (deftest test-find-minimum-delay
   (is (= 10 (find-minimum-delay (initialise-firewall example-input))))
-  ; skipping calculation of actual solution due to long run time
-  ;(is (= 3849742 (find-minimum-delay (initialise-firewall input))))
-  )
+  (is (= 3849742 (find-minimum-delay (initialise-firewall input)))))
