@@ -29,4 +29,6 @@
 
 (deftest test-find-minimum-delay
   (is (= 10 (find-minimum-delay (initialise-firewall example-input))))
-  (is (= 3849742 (find-minimum-delay (initialise-firewall input)))))
+  ;commented out to make tests run faster
+  ;(is (= 3849742 (find-minimum-delay (initialise-firewall input))))
+)
