@@ -6,8 +6,8 @@
 (def example-input "0: 3\n1: 2\n4: 4\n6: 4")
 (def input (slurp (io/resource "year2017/day13.txt")))
 
-(deftest test-initialise-firewall
-  (is (= [[3 0] [2 0] [0 0] [0 0] [4 0] [0 0] [4 0]] (initialise-firewall example-input))))
+(deftest test-initialise-firewall2
+  (is (= [[0 3] [1 2] [4 4] [6 4]] (initialise-firewall example-input))))
 
 (deftest test-scanner-position
   (is (= 0 (scanner-position 4 0)))
@@ -15,12 +15,6 @@
   (is (= 1 (scanner-position 4 5)))
   (is (= 0 (scanner-position 4 6)))
   (is (= 1 (scanner-position 4 7))))
-
-(deftest test-calculate-scanner-positions
-  (is (= [[3 1] [2 1] [0 0] [0 0] [4 1] [0 0] [4 1]]
-         (calculate-scanner-positions [[3 0] [2 0] [0 0] [0 0] [4 0] [0 0] [4 0]] 1)))
-  (is (= [[3 2] [2 0] [0 0] [0 0] [4 2] [0 0] [4 2]]
-         (calculate-scanner-positions [[3 1] [2 1] [0 0] [0 0] [4 1] [0 0] [4 1]] 2))))
 
 (deftest test-calculate-severity
   (is (= 24 (calculate-severity (initialise-firewall example-input))))
@@ -31,4 +25,7 @@
   (is (not (caught? (initialise-firewall example-input) 10))))
 
 (deftest test-find-minimum-delay
-  (is (= 10 (find-minimum-delay (initialise-firewall example-input)))))
+  (is (= 10 (find-minimum-delay (initialise-firewall example-input))))
+  ; skipping calculation of actual solution due to long run time
+  ;(is (= 3849742 (find-minimum-delay (initialise-firewall input))))
+  )
