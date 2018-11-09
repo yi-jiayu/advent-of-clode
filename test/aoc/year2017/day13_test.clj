@@ -25,3 +25,10 @@
 (deftest test-calculate-severity
   (is (= 24 (calculate-severity (initialise-firewall example-input))))
   (is (= 632 (calculate-severity (initialise-firewall input)))))
+
+(deftest test-caught?
+  (is (caught? (initialise-firewall example-input) 0))
+  (is (not (caught? (initialise-firewall example-input) 10))))
+
+(deftest test-find-minimum-delay
+  (is (= 10 (find-minimum-delay (initialise-firewall example-input)))))
