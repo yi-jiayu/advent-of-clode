@@ -65,7 +65,7 @@
                                     (cond
                                       (not (used? grid square)) [visited num-regions]
                                       (visited square) [visited num-regions]
-                                      :else [(clojure.set/union visited (explore grid square))
+                                      :else [(apply (partial conj visited) (explore grid square))
                                              (+ 1 num-regions)]
                                       ))
                                   [#{} 0]
