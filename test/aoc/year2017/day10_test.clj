@@ -48,4 +48,5 @@
   (is (= "a2582a3a0e66e6e86e3812dcb672a272" (knot-hash "")))
   (is (= "33efeb34ea91902bb2f59c9920caa6cd" (knot-hash "AoC 2017")))
   (is (= "3efbe78a8d82f29979031a4aa0b16a9d" (knot-hash "1,2,3")))
-  (is (= "63960835bcdc130f0b66d7ff4f6a5a8e" (knot-hash "1,2,4"))))
+  (is (= "63960835bcdc130f0b66d7ff4f6a5a8e" (knot-hash "1,2,4")))
+  (is (= "35b028fe2c958793f7d5a61d07a008c8" (knot-hash input))))
