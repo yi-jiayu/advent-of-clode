@@ -44,12 +44,11 @@
   (loop [frontier (conj PersistentQueue/EMPTY [[1 1] 0])
          explored #{}]
     (let [[curr depth] (peek frontier)
-          frontier (pop frontier)
-          explored (conj explored curr)]
+          frontier (pop frontier)]
       (if (> depth steps)
         (count explored)
         (let [adjacent (remove explored (neighbours fav curr))
               frontier (apply (partial conj frontier)
                               (map #(vector % (+ depth 1)) adjacent))]
           (recur frontier
-                 explored))))))
+                 (conj explored curr)))))))
