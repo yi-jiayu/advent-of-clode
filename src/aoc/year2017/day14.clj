@@ -18,9 +18,9 @@
   "Converts a list of integers into its binary representation."
   [ints]
   (apply str (map
-              (comp #(format "%8s" %)
-                    #(Integer/toBinaryString %))
-              ints)))
+               (comp #(format "%8s" %)
+                     #(Integer/toBinaryString %))
+               ints)))
 
 (defn to-grid
   [disk-hashes]
@@ -38,8 +38,8 @@
 (defn neighbours
   [grid xy]
   (into #{} (filter (every-pred
-                     (partial in-grid? (count grid) (count (first grid)))
-                     (partial used? grid))
+                      (partial in-grid? (count grid) (count (first grid)))
+                      (partial used? grid))
                     (aoc.core/adjacent xy))))
 
 (defn explore
@@ -55,3 +55,19 @@
           explored
           (recur frontier
                  explored))))))
+
+(defn count-regions
+  [grid]
+  (let [squares (for [row (range (count grid))
+                      col (range (count (first grid)))]
+                  [row col])]
+    (let [[_ num-regions] (reduce (fn [[visited num-regions] square]
+                                    (cond
+                                      (not (used? grid square)) [visited num-regions]
+                                      (visited square) [visited num-regions]
+                                      :else [(clojure.set/union visited (explore grid square))
+                                             (+ 1 num-regions)]
+                                      ))
+                                  [#{} 0]
+                                  squares)]
+      num-regions)))
