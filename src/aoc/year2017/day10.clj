@@ -75,5 +75,4 @@ is used to build the resulting hash."
   (-> input
       parse-input-bytes
       knot-hash-rounds
-      condense-hash
-      to-hex))
+      condense-hash))
