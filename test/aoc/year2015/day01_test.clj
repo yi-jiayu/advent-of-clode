@@ -5,7 +5,7 @@
 
 (def input (slurp (io/resource "year2015/day01.txt")))
 
-(deftest test-final-floor
+(deftest final-floor-test
   (testing "example inputs"
     (is (= 0 (final-floor "(())")))
     (is (= 0 (final-floor "()()")))
@@ -19,7 +19,7 @@
   (testing "actual input"
     (is (= 280 (final-floor input)))))
 
-(deftest test-first-step-into-basement
+(deftest first-step-into-basement-test
   (testing "example inputs"
     (is (= 1 (first-step-into-basement ")")))
     (is (= 5 (first-step-into-basement "()())"))))

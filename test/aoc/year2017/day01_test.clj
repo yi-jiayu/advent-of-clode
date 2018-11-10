@@ -5,7 +5,7 @@
 
 (def input (slurp (io/resource "year2017/day01.txt")))
 
-(deftest test-solve-captcha-part-1
+(deftest solve-captcha-part-1-test
   (testing "example inputs"
     (is (= 3 (solve-captcha-part-1 "1122")))
     (is (= 4 (solve-captcha-part-1 "1111")))
@@ -14,7 +14,7 @@
   (testing "actual input"
     (is (= 1253 (solve-captcha-part-1 input)))))
 
-(deftest test-solve-captcha-part-2
+(deftest solve-captcha-part-2-test
   (testing "example inputs"
     (is (= 6 (solve-captcha-part-2 "1212")))
     (is (= 0 (solve-captcha-part-2 "1221")))
