@@ -5,11 +5,29 @@
 (def example-input "flqrgnkx")
 (def input "jxqlasbh")
 
-(deftest test-to-bin
-  (is (clojure.string/starts-with?
-        (to-bin "a0c2017")
-        "1010000011000010000000010111")))
+(deftest used-squares-test
+  (is (= 8108 (used-squares (disk-hashes example-input))))
+  (is (= 8140 (used-squares (disk-hashes input)))))
 
-(deftest test-used-squares
-  (is (= 8108 (used-squares (to-grid example-input))))
-  (is (= 8140 (used-squares (to-grid input)))))
+(deftest to-bin-test
+  (is (clojure.string/starts-with?
+       (clojure.string/replace (to-bin [0xa0 0xc2 0x01 0x70]) " " "0")
+       "10100000110000100000000101110000")))
+
+(deftest used?-test
+  (let [my-grid (to-grid (disk-hashes example-input 8))]
+    (is (used? my-grid 0 0))
+    (is (used? my-grid 0 1))
+    (is (not (used? my-grid 0 2)))
+    (is (used? my-grid [0 0]))
+    (is (not (used? my-grid [1 0])))
+    (is (not (used? my-grid [2 0])))))
+
+(deftest neighbours-test
+  (let [my-grid (to-grid (disk-hashes example-input 8))]
+    (is (= #{[0 0] [1 1]} (neighbours my-grid [0 1])))))
+
+(deftest explore-test
+  (let [my-grid (to-grid (disk-hashes example-input 8))]
+    (is (= #{[2 4] [3 4] [4 4] [5 4] [3 5]}
+           (explore my-grid [2 4])))))
