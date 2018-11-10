@@ -1,12 +1,10 @@
 (ns aoc.year2015.day01)
 
-(def left-parens \()
-(def right-parens \))
-
 (defn final-floor [instructions]
-  (reduce #(condp = %2
-             left-parens (+ %1 1)
-             right-parens (- %1 1))
+  (reduce (fn [floor instr]
+            (case instr
+              \( (+ floor 1)
+              \) (- floor 1)))
           0
           instructions))
 
@@ -16,7 +14,7 @@
          instructions instructions]
     (if (= floor -1) position
         (recur (+ position 1)
-               (condp = (first instructions)
-                 left-parens (+ floor 1)
-                 right-parens (- floor 1))
+               (case (first instructions)
+                 \( (+ floor 1)
+                 \) (- floor 1))
                (rest instructions)))))
