@@ -7,11 +7,10 @@
 
 (defn generator
   "Returns a lazy sequence representing the values produced by a generator with the given initial value, factor and modulus."
-  [initial factor modulus]
-  (let [next (partial next-value factor modulus)]
-    (fn gen
-      ([] (gen initial))
-      ([prev] (lazy-seq (cons (next prev) (gen (next prev))))))))
+  ([initial factor modulus] (generator nil factor modulus initial))
+  ([_ factor modulus prev]
+   (let [next (partial next-value factor modulus)]
+     (lazy-seq (cons (next prev) (generator _ factor modulus (next prev)))))))
 
 (defn generator-a
   [initial]
@@ -29,7 +28,7 @@
 (defn judge
   "Returns a lazy sequence representing whether the last 16 bits of each value produced by `a` and `b` match."
   [a b]
-  (map lowest-bits-match? (a) (b)))
+  (map lowest-bits-match? a b))
 
 (defn final-count
   "Counts the number of values out of `n` produced by `a` and `b` with matching lowest 16 bits."
@@ -45,3 +44,19 @@
              last
              #(clojure.string/split %1 #" "))
        (clojure.string/split-lines input)))
+
+(defn multiples-of-4
+  [generator]
+  (filter #(zero? (bit-and % 3)) generator))
+
+(defn multiples-of-8
+  [generator]
+  (filter #(zero? (bit-and % 7)) generator))
+
+(defn generator-a'
+  [initial]
+  (multiples-of-4 (generator-a initial)))
+
+(defn generator-b'
+  [initial]
+  (multiples-of-8 (generator-b initial)))
