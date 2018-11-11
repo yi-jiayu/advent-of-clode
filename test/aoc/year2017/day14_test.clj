@@ -11,8 +11,8 @@
 
 (deftest to-bin-test
   (is (clojure.string/starts-with?
-        (clojure.string/replace (to-bin [0xa0 0xc2 0x01 0x70]) " " "0")
-        "10100000110000100000000101110000")))
+       (clojure.string/replace (to-bin [0xa0 0xc2 0x01 0x70]) " " "0")
+       "10100000110000100000000101110000")))
 
 (deftest used?-test
   (let [my-grid (to-grid (disk-hashes example-input 8))]
