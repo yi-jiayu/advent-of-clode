@@ -9,9 +9,10 @@
   (is (= 29 (used-squares (disk-hashes example-input 8))))
   (is (= 35 (used-squares (disk-hashes input 8)))))
 
-(deftest ^:slow used-squares-slow-test
-  (is (= 8108 (used-squares (disk-hashes example-input))))
-  (is (= 8140 (used-squares (disk-hashes input)))))
+; FIXME: uncomment and delete corresponding *-slow-test namespace once cloverage supports test selectors
+;(deftest ^:slow used-squares-slow-test
+;  (is (= 8108 (used-squares (disk-hashes example-input))))
+;  (is (= 8140 (used-squares (disk-hashes input)))))
 
 (deftest to-bin-test
   (is (clojure.string/starts-with?
@@ -40,6 +41,7 @@
   (is (= 12 (count-regions (to-grid (disk-hashes example-input 8)))))
   (is (= 4 (count-regions (to-grid (disk-hashes input 8))))))
 
-(deftest ^:slow count-regions-slow-test
-  (is (= 1242 (count-regions (to-grid (disk-hashes example-input)))))
-  (is (= 1182 (count-regions (to-grid (disk-hashes input))))))
+; FIXME: uncomment and delete corresponding *-slow-test namespace once cloverage supports test selectors
+;(deftest ^:slow count-regions-slow-test
+;  (is (= 1242 (count-regions (to-grid (disk-hashes example-input)))))
+;  (is (= 1182 (count-regions (to-grid (disk-hashes input))))))

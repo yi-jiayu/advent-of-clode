@@ -28,13 +28,14 @@
         b (generator-b 8921)]
     (is (= 1 (final-count a b 5)))))
 
-(deftest ^:slow final-count-slow-test
-  (let [a (generator-a 65)
-        b (generator-b 8921)
-        a' (generator-a 703)
-        b' (generator-b 516)]
-    (is (= 588 (final-count a b 40000000)))
-    (is (= 594 (final-count a' b' 40000000)))))
+; FIXME: uncomment and delete corresponding *-slow-test namespace once cloverage supports test selectors
+;(deftest ^:slow final-count-slow-test
+;  (let [a (generator-a 65)
+;        b (generator-b 8921)
+;        a' (generator-a 703)
+;        b' (generator-b 516)]
+;    (is (= 588 (final-count a b 40000000)))
+;    (is (= 594 (final-count a' b' 40000000)))))
 
 (deftest parse-input-test
   (is (= [703 516] (parse-input input))))

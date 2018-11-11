@@ -30,5 +30,6 @@
 (deftest find-minimum-delay-test
   (is (= 10 (find-minimum-delay (initialise-firewall example-input)))))
 
-(deftest ^:slow find-minimum-delay-long-test
-  (is (= 3849742 (find-minimum-delay (initialise-firewall input)))))
+; FIXME: uncomment and delete corresponding *-slow-test namespace once cloverage supports test selectors
+;(deftest ^:slow find-minimum-delay-long-test
+;  (is (= 3849742 (find-minimum-delay (initialise-firewall input)))))
