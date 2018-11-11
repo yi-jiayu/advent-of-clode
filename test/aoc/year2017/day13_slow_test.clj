@@ -5,5 +5,5 @@
 
 (def input (slurp (io/resource "year2017/day13.txt")))
 
-(deftest find-minimum-delay-long-test
+(deftest ^:slow find-minimum-delay-long-test
   (is (= 3849742 (find-minimum-delay (initialise-firewall input)))))

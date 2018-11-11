@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all])
   (:require [aoc.year2017.day15 :refer :all]))
 
-(deftest final-count-slow-test
+(deftest ^:slow final-count-slow-test
   (testing "example initial values"
     (let [a (generator-a 65)
           b (generator-b 8921)
