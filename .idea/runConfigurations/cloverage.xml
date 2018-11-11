@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="cloverage" type="LeiningenRunConfiguration" factoryName="Leiningen">
+    <module name="aoc" />
+    <arguments argument="cloverage" />
+    <setting name="profiles" value="" />
+    <setting name="trampoline" value="false" />
+    <method v="2" />
+  </configuration>
+</component>
