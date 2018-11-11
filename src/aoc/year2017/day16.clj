@@ -1,9 +1,10 @@
-(ns aoc.year2017.day16)
+(ns aoc.year2017.day16
+  (:require [aoc.core :refer [rotate]]))
 
 (defn spin
   "Makes `x` programs move from the end to the front, but maintain their order otherwise."
   [x programs]
-  (into [] (aoc.core/rotate (- x) programs)))
+  (into [] (rotate (- x) programs)))
 
 (defn exchange
   "Makes the programs at positions `a` and `b` swap places."
@@ -44,3 +45,23 @@
           programs
           moves))
 
+(defn new-positions
+  [before after]
+  (map #(.indexOf after %) before))
+
+(defn offsets
+  [before after]
+  (map - (new-positions before after) (range (count before))))
+
+(defn apply-new-positions
+  [new-positions programs]
+  (mapv (partial nth programs) new-positions))
+
+(defn dance-over-and-over
+  [n moves programs]
+  (loop [remaining n
+         programs programs]
+    (if (< 0 remaining)
+      (recur (dec remaining)
+             (dance moves programs))
+      programs)))
