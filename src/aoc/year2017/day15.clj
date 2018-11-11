@@ -12,3 +12,36 @@
     (fn gen
       ([] (gen initial))
       ([prev] (lazy-seq (cons (next prev) (gen (next prev))))))))
+
+(defn generator-a
+  [initial]
+  (generator initial 16807 2147483647))
+
+(defn generator-b
+  [initial]
+  (generator initial 48271 2147483647))
+
+(defn lowest-bits-match?
+  "Returns true if the lowest 16 bits of `a` and `b` match."
+  [a b]
+  (= (bit-and a 0xffff) (bit-and b 0xffff)))
+
+(defn judge
+  "Returns a lazy sequence representing whether the last 16 bits of each value produced by `a` and `b` match."
+  [a b]
+  (map lowest-bits-match? (a) (b)))
+
+(defn final-count
+  "Counts the number of values out of `n` produced by `a` and `b` with matching lowest 16 bits."
+  [a b n]
+  (->> (judge a b)
+       (take n)
+       (filter identity)
+       (count)))
+
+(defn parse-input
+  [input]
+  (map (comp #(Integer/parseInt % 10)
+             last
+             #(clojure.string/split %1 #" "))
+       (clojure.string/split-lines input)))
