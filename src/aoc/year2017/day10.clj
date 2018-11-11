@@ -4,25 +4,17 @@
 (def max-length 256)
 (def num-rounds 64)
 
-; rotate function from https://groups.google.com/forum/#!topic/clojure/SjmevTjZPcQ
-(defn rotate
-  "Take a collection and left rotates it n steps.
-  If n is negative, the collection is rotated right. Executes in O(n) time."
-  [n coll]
-  (let [c (count coll)]
-    (take c (drop (mod n c) (cycle coll)))))
-
 (defn reverse-sublist
   "Reverses the `length` element long sublist of `l` starting from the element at index `start`."
   [l start length]
   (if (< length 2)
     ; lengths of 0 or 1 have no effect
     l
-    (let [l' (into [] (rotate start l))
+    (let [l' (into [] (aoc.core/rotate start l))
           mid (subvec l' 0 length)
           aft (subvec l' length)
           l'' (into [] (concat (reverse mid) aft))]
-      (rotate (- start) l''))))
+      (aoc.core/rotate (- start) l''))))
 
 (defn knot-hash-update
   "Updates `l` based on `curr-pos`, `skip-size` and `length`. Returns a tuple of the new l, curr-pos and skip-size."
