@@ -19,4 +19,4 @@
 
 (deftest track-value-after-zero-test
   (is (= 9 (track-value-after-zero 9 3)))
-  (is (= 9 (track-value-after-zero 50e6 input))))
+  (is (= 11995607 (track-value-after-zero 5E7 input))))
