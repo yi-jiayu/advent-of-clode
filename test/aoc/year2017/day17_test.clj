@@ -18,5 +18,4 @@
   (is (= 866 (short-circuit 2017 input))))
 
 (deftest track-value-after-zero-test
-  (is (= 9 (track-value-after-zero 9 3)))
-  (is (= 11995607 (track-value-after-zero 5E7 input))))
+  (is (= 9 (track-value-after-zero 9 3))))
