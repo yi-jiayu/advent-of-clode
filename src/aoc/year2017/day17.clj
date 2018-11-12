@@ -25,3 +25,23 @@
   [rounds step-size]
   (let [[^LinkedList buf last-index] (spinlock rounds step-size)]
     (.get buf (inc last-index))))
+
+(defn track-value-after-zero
+  [rounds step-size]
+  (loop [buf-size 1
+         curr-pos 0
+         next-value 1
+         zero-pos 0
+         value-after-zero nil]
+    (if (< rounds buf-size)
+      value-after-zero
+      (let [new-pos (inc (rem (+ curr-pos step-size) buf-size))
+            [zero-pos value-after-zero] (cond
+                                          (<= new-pos zero-pos) [(inc zero-pos) value-after-zero]
+                                          (= new-pos (inc zero-pos)) [zero-pos next-value]
+                                          :else [zero-pos value-after-zero])]
+        (recur (inc buf-size)
+               new-pos
+               (inc next-value)
+               zero-pos
+               value-after-zero)))))
