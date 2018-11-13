@@ -27,9 +27,9 @@
   (is (= 1 (value-of 1 {})))
   (is (= 1 (value-of :a {:a 1}))))
 
-(deftest isnd-test
-  (is (= {:pc 1 :output 1} (isnd {} 1)))
-  (is (= {:a 1 :pc 1 :output 1} (isnd {:a 1} :a))))
+(deftest isound-test
+  (is (= {:pc 1 :output 1} (isound {} 1)))
+  (is (= {:a 1 :pc 1 :output 1} (isound {:a 1} :a))))
 
 (deftest iset-test
   (is (= {:a 1 :pc 1} (iset {} :a 1)))
@@ -47,11 +47,11 @@
   (is (= {:a 2 :pc 1} (imod {:a 5} :a 3)))
   (is (= {:a 2 :b 3 :pc 1} (imod {:a 5 :b 3} :a :b))))
 
-(deftest ircv-test
-  (is (= {:pc 2 :output 1} (ircv {:pc 1 :output 1} 0)))
-  (is (= {:pc 2 :output 1 :recovered 1} (ircv {:pc 1 :output 1} 1)))
-  (is (= {:a 0 :pc 2 :output 1} (ircv {:a 0 :pc 1 :output 1} :a)))
-  (is (= {:a 1 :pc 2 :output 1 :recovered 1} (ircv {:a 1 :pc 1 :output 1} :a))))
+(deftest irecover-test
+  (is (= {:pc 2 :output 1} (irecover {:pc 1 :output 1} 0)))
+  (is (= {:pc 2 :output 1 :recovered 1} (irecover {:pc 1 :output 1} 1)))
+  (is (= {:a 0 :pc 2 :output 1} (irecover {:a 0 :pc 1 :output 1} :a)))
+  (is (= {:a 1 :pc 2 :output 1 :recovered 1} (irecover {:a 1 :pc 1 :output 1} :a))))
 
 (deftest ijgz-test
   (is (= {:pc 1} (ijgz {} 0 5)))
@@ -73,12 +73,12 @@
 (deftest parse-instructions-test
   (is (= example-instructions (parse-instructions example-input))))
 
-(deftest execute-test
+(deftest soundcard-execute-test
   (is (= {:pc 4 :a 4}
-         (execute example-instructions #(= 4 (get-register :pc %)))))
+         (soundcard-execute example-instructions #(= 4 (get-register :pc %)))))
   (is (= {:pc 5 :a 4 :output 4}
-         (execute example-instructions #(= 5 (get-register :pc %)))))
+         (soundcard-execute example-instructions #(= 5 (get-register :pc %)))))
   (is (= {:pc 7 :a 1 :output 4 :recovered 4}
-         (execute example-instructions #(not= 0 (get-register :recovered %)))))
+         (soundcard-execute example-instructions #(not= 0 (get-register :recovered %)))))
   (is (= 3423
-         (:recovered (execute (parse-instructions input) #(not= 0 (get-register :recovered %)))))))
+         (:recovered (soundcard-execute (parse-instructions input) #(not= 0 (get-register :recovered %)))))))

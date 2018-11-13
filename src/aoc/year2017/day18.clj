@@ -25,7 +25,7 @@
     (get-register x registers)
     x))
 
-(defn isnd
+(defn isound
   "Plays a sound with a frequency equal to the value of `x`."
   [registers x]
   (let [x (value-of x registers)]
@@ -64,7 +64,7 @@
          (update-register x #(rem % y))
          (inc-pc))))
 
-(defn ircv
+(defn irecover
   "Recovers the frequency of the last sound played, but only when the value of `x` is not zero."
   [registers x]
   (inc-pc (if (not (zero? (value-of x registers)))
@@ -96,19 +96,25 @@
   [input]
   (map parse-instruction (clojure.string/split-lines input)))
 
-(def instr-map {:snd isnd
-                :set iset
-                :add iadd
-                :mul imul
-                :mod imod
-                :rcv ircv
-                :jgz ijgz})
+(def soundcard-instr-map {:snd isound
+                          :set iset
+                          :add iadd
+                          :mul imul
+                          :mod imod
+                          :rcv irecover
+                          :jgz ijgz})
 
-(defn execute
-  ([instructions break-condition]
-   (loop [registers {}]
-     (let [pc (get-register :pc registers)]
-       (if (and (< -1 (count instructions)) (not (break-condition registers)))
-         (let [[instr & args] (nth instructions pc)]
-           (recur (apply (instr-map instr) registers args)))
-         registers)))))
+(defn soundcard-execute
+  [instructions break-condition]
+  (loop [registers {}]
+    (let [pc (get-register :pc registers)]
+      (if (and (< -1 (count instructions)) (not (break-condition registers)))
+        (let [[instr & args] (nth instructions pc)]
+          (recur (apply (soundcard-instr-map instr) registers args)))
+        registers))))
+
+(defn isend
+  [registers x])
+
+(defn ireceive
+  [registers x y])
