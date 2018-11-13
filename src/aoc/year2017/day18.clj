@@ -7,12 +7,14 @@
   (assoc registers reg val))
 
 (defn get-register
-  "Gets the value of register `reg` from `registers`. The default value for a register is 0."
+  "Gets the value of register `reg` from `registers`. The default value for a
+  register is 0."
   [reg registers]
   (reg registers 0))
 
 (defn update-register
-  "Updates the value of register `reg` inside `registers` by applying `fn` to its current value."
+  "Updates the value of register `reg` inside `registers` by applying `fn` to
+  its current value."
   [reg fn registers]
   (assoc registers reg (fn (get-register reg registers))))
 
@@ -58,7 +60,8 @@
          (inc-pc))))
 
 (defn imod
-  "Sets register `x` to the remainder of dividing the value contained in register `x` by the value of `y`."
+  "Sets register `x` to the remainder of dividing the value contained in
+  register `x` by the value of `y`."
   [registers x y]
   (let [y (value-of y registers)]
     (->> registers
@@ -66,14 +69,16 @@
          (inc-pc))))
 
 (defn irecover
-  "Recovers the frequency of the last sound played, but only when the value of `x` is not zero."
+  "Recovers the frequency of the last sound played, but only when the value of
+   `x` is not zero."
   [registers x]
   (inc-pc (if (not (zero? (value-of x registers)))
             (set-register :recovered (get-register :output registers) registers)
             registers)))
 
 (defn ijgz
-  "Jumps with an offset of the value of `y`, but only if the value of `x` is greater than zero."
+  "Jumps with an offset of the value of `y`, but only if the value of `x` is
+  greater than zero."
   [registers x y]
   (let [x (value-of x registers)
         y (value-of y registers)]
