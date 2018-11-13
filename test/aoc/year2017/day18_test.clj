@@ -1,6 +1,7 @@
 (ns aoc.year2017.day18-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
+            [clojure.core.async :as async]
             [aoc.year2017.day18 :refer :all]))
 
 (def example-input "set a 1\nadd a 2\nmul a a\nmod a 5\nsnd a\nset a 0\nrcv a\njgz a -1\nset a 1\njgz a -2")
@@ -82,3 +83,17 @@
          (soundcard-execute example-instructions #(not= 0 (get-register :recovered %)))))
   (is (= 3423
          (:recovered (soundcard-execute (parse-instructions input) #(not= 0 (get-register :recovered %)))))))
+
+(deftest isend-test
+  (let [my-chan (async/chan 1)]
+    (testing "should successfully send value to channel"
+      (is (= 1
+             (do (isend {:out my-chan} 1)
+                 (first (async/alts!! [my-chan (async/timeout 100)]))))))))
+
+(deftest ireceive-test
+  (testing "should successfully receive value from channel"
+    (let [my-chan (async/chan 1)]
+      (is (= 1
+             (do (async/>!! my-chan 1)
+                 (get-register :a (ireceive {:in my-chan} :a))))))))
