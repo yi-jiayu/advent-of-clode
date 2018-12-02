@@ -17,11 +17,7 @@
   "returns a lazy sequence of the frequencies reached while continuously
   repeating the same list of frequency changes."
   [changes]
-  (when-let [changes (cycle changes)]
-    (map first
-         (iterate (fn [[freq changes]]
-                    [(+ freq (first changes)) (rest changes)])
-                  [0 changes]))))
+  (reductions + (cons 0 (cycle changes))))
 
 (defn first-frequency-reached-twice
   [changes]
