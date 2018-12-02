@@ -26,9 +26,9 @@
 
 (defn common-chars
   [s1 s2]
-  (apply str (map second
-                  (filter (fn [[a _]] true? a)
-                          (map (fn [a b] [(= a b) a]) s1 s2)))))
+  (apply str
+         (filter some?
+                 (map #(if (= %1 %2) %1) s1 s2))))
 
 (defn correct-box-ids
   "Returns the pair of box ids which differ by exactly one character."
