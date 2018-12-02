@@ -24,4 +24,4 @@
   (is (= 10 (first-frequency-reached-twice [3 3 4 -2 -4])))
   (is (= 5 (first-frequency-reached-twice [-6 3 8 5 -6])))
   (is (= 14 (first-frequency-reached-twice [7 7 -2 -7 -4])))
-  (is (= 14 (first-frequency-reached-twice (parse-frequency-changes input)))))
+  (is (= 56360 (first-frequency-reached-twice (parse-frequency-changes input)))))
