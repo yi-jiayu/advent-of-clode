@@ -1,9 +1,6 @@
 (ns aoc.year2018.day03-test
   (:require [clojure.test :refer :all]
-            [clojure.java.io :as io]
             [aoc.year2018.day03 :refer :all]))
-
-(def input (slurp (io/resource "year2018/day03.txt")))
 
 (deftest parse-claim-test
   (is (= {:id 15, :col-offset 110, :row-offset 919, :width 19, :height 18}
@@ -70,8 +67,6 @@
             [0 1 2 1]
             [0 0 1 1]] (mark-claims cloth claims)))))
 
-(def spy #(do (println "DEBUG:" %) %))
-
 (deftest count-disputed-test
   (is (= 2 (count-disputed [[1 1 0 0]
                             [1 2 1 0]
@@ -84,10 +79,7 @@
                             [0 1 1 2 2 1 1 0]
                             [0 1 1 1 1 1 1 0]
                             [0 1 1 1 1 1 1 0]
-                            [0 0 0 0 0 0 0 0]])))
-  (is (= 107663 (count-disputed (->> input
-                                     (parse-claims)
-                                     (mark-claims (make-cloth 1000)))))))
+                            [0 0 0 0 0 0 0 0]]))))
 
 (let [claim1 (parse-claim "#1 @ 1,3: 4x4")
       claim2 (parse-claim "#2 @ 3,1: 4x4")
@@ -119,6 +111,4 @@
       (is (true? (intersects-none? claims claim3))))
 
     (deftest find-non-overlapping-claim-test
-      (is (= claim3 (find-non-overlapping-claim claims)))
-      (is (= {:id 1166, :col-offset 126, :row-offset 200, :width 10, :height 11}
-             (find-non-overlapping-claim (parse-claims input)))))))
+      (is (= claim3 (find-non-overlapping-claim claims))))))
