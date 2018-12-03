@@ -7,5 +7,5 @@
                  [org.clojure/math.combinatorics "0.1.4"]
                  [org.clojure/core.async "0.4.474"]]
   :profiles {:dev {:plugins   [[lein-cloverage "1.0.13"] [lein-cljfmt "0.6.1"]]
-                   :cloverage {:test-ns-regex [#"^((?!slow-test).)*$"]}}}
+                   :cloverage {:test-ns-regex [#"^((?!test-skip-coverage).)*$"]}}}
   :test-selectors {:default (complement :slow)})

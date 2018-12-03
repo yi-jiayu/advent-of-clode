@@ -1,4 +1,4 @@
-(ns aoc.year2017.day14-slow-test
+(ns aoc.year2017.day14-test-skip-coverage
   (:require [clojure.test :refer :all])
   (:require [aoc.year2017.day14 :refer :all]))
 
