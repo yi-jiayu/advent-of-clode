@@ -14,7 +14,6 @@
   (is (= 3 (resulting-frequency [1 -2 3 1])))
   (is (= 411 (resulting-frequency (parse-frequency-changes input)))))
 
-
 (deftest lazy-frequencies-test
   (is (= [0 1 -1 2 3 4 2] (take 7 (lazy-frequencies example-frequency-changes)))))
 
