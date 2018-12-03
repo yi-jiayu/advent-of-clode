@@ -1,5 +1,4 @@
-(ns aoc.year2017.day18
-  (:require [clojure.core.async :as async]))
+(ns aoc.year2017.day18)
 
 (defn set-register
   "Sets the value of register `reg` inside `registers` to `val`."
@@ -119,27 +118,16 @@
           (recur (apply (soundcard-instr-map instr) registers args)))
         registers))))
 
-(defn- chan?
-  [x]
-  (satisfies? clojure.core.async.impl.protocols/WritePort x))
-
 (defn isend
   "Sends the value of `x` to the other program.
   These values wait in a queue until that program is ready to receive them.
   Each program has its own message queue, so a program can never receive a
   message it sent."
-  [registers x]
-  {:pre [(chan? (get-register :out registers))]}
-  (do (async/go (async/>! (get-register :out registers) (value-of x registers)))
-      registers))
+  [registers x])
 
 (defn ireceive
   "Receives the next value and stores it in register `x`.
   If no values are in the queue, the program waits for a value to be sent to it.
   Programs do not continue to the next instruction until they have received a
   value. Values are received in the order they are sent."
-  [registers x]
-  {:pre (chan? (get-register :in registers))}
-  (set-register x
-                (async/<!! (async/go (async/<! (get-register :in registers))))
-                registers))
+  [registers x])
