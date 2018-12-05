@@ -23,3 +23,21 @@
 (defn inert-length
   [polymer]
   (count (react polymer)))
+
+(defn units
+  [polymer]
+  (into #{} (clojure.string/upper-case polymer)))
+
+(defn remove-unit
+  [polymer unit]
+  (remove #{unit (char (+ (int unit) 32))} polymer))
+
+(defn inert-length-removing-unit
+  [polymer unit]
+  (inert-length (remove-unit polymer unit)))
+
+(defn shortest-inert-length-removing-unit
+  [polymer]
+  (apply min
+         (pmap (partial inert-length-removing-unit polymer)
+               (units polymer))))
