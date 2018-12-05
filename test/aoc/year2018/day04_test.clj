@@ -87,7 +87,7 @@
     (is (= (into [] (flatten (map repeat [5 20 35] [0 1 0 1 0])))
            (update-minutes-asleep-count (into [] (repeat 60 0)) time-slept time-woke)))))
 
-(deftest calculate-minutes-asleep-count-test
+(deftest minute-asleep-most-test
   (let [logs (parse-logs "[1518-11-01 00:00] Guard #10 begins shift
                           [1518-11-01 00:05] falls asleep
                           [1518-11-01 00:25] wakes up
@@ -106,5 +106,46 @@
                           [1518-11-05 00:45] falls asleep
                           [1518-11-05 00:55] wakes up")
         guard-id 10]
-    (is (= 24 (calculate-minutes-asleep-count logs guard-id))))
-  (is (= 29 (calculate-minutes-asleep-count (parse-logs input) 2633))))
+    (is (= 24 (minute-asleep-most logs guard-id))))
+  (is (= 29 (minute-asleep-most (parse-logs input) 2633))))
+
+(deftest all-guards-test
+  (let [logs (parse-logs "[1518-11-01 00:00] Guard #10 begins shift
+                          [1518-11-01 00:05] falls asleep
+                          [1518-11-01 00:25] wakes up
+                          [1518-11-01 00:30] falls asleep
+                          [1518-11-01 00:55] wakes up
+                          [1518-11-01 23:58] Guard #99 begins shift
+                          [1518-11-02 00:40] falls asleep
+                          [1518-11-02 00:50] wakes up
+                          [1518-11-03 00:05] Guard #10 begins shift
+                          [1518-11-03 00:24] falls asleep
+                          [1518-11-03 00:29] wakes up
+                          [1518-11-04 00:02] Guard #99 begins shift
+                          [1518-11-04 00:36] falls asleep
+                          [1518-11-04 00:46] wakes up
+                          [1518-11-05 00:03] Guard #99 begins shift
+                          [1518-11-05 00:45] falls asleep
+                          [1518-11-05 00:55] wakes up")]
+    (is (= #{10 99} (all-guards logs)))))
+
+(deftest most-frequently-asleep-in-the-same-minute-test
+  (let [logs (parse-logs "[1518-11-01 00:00] Guard #10 begins shift
+                          [1518-11-01 00:05] falls asleep
+                          [1518-11-01 00:25] wakes up
+                          [1518-11-01 00:30] falls asleep
+                          [1518-11-01 00:55] wakes up
+                          [1518-11-01 23:58] Guard #99 begins shift
+                          [1518-11-02 00:40] falls asleep
+                          [1518-11-02 00:50] wakes up
+                          [1518-11-03 00:05] Guard #10 begins shift
+                          [1518-11-03 00:24] falls asleep
+                          [1518-11-03 00:29] wakes up
+                          [1518-11-04 00:02] Guard #99 begins shift
+                          [1518-11-04 00:36] falls asleep
+                          [1518-11-04 00:46] wakes up
+                          [1518-11-05 00:03] Guard #99 begins shift
+                          [1518-11-05 00:45] falls asleep
+                          [1518-11-05 00:55] wakes up")]
+    (is (= [99 45] (most-frequently-asleep-in-the-same-minute logs))))
+  (is (= [947 44] (most-frequently-asleep-in-the-same-minute (parse-logs input)))))

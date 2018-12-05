@@ -80,7 +80,7 @@
          last-time nil
          logs logs]
     (if (empty? logs)
-      (.indexOf minutes-asleep-count (apply max minutes-asleep-count))
+      minutes-asleep-count
       (let [curr (first logs)
             [total-minutes-slept
              guard-id'
@@ -92,7 +92,9 @@
                                                 guard-id'
                                                 (:timestamp curr)]
                           (:wakes-up curr) [(if (= guard-id guard-id')
-                                              (update-minutes-asleep-count minutes-asleep-count last-time (:timestamp curr))
+                                              (update-minutes-asleep-count minutes-asleep-count
+                                                                           last-time
+                                                                           (:timestamp curr))
                                               minutes-asleep-count)
                                             guard-id'
                                             nil])]
@@ -100,3 +102,19 @@
                guard-id'
                last-time
                (rest logs))))))
+
+(defn minute-asleep-most
+  [logs guard]
+  (let [minutes-asleep-count (calculate-minutes-asleep-count logs guard)]
+    (.indexOf minutes-asleep-count (apply max minutes-asleep-count))))
+
+(defn all-guards
+  [logs]
+  (into #{} (filter (comp not nil?) (map :guard logs))))
+
+(defn most-frequently-asleep-in-the-same-minute
+  [logs]
+  (let [guards (all-guards logs)
+        guard (apply max-key #(apply max (calculate-minutes-asleep-count logs %)) guards)
+        minute (minute-asleep-most logs guard)]
+    [guard minute]))
