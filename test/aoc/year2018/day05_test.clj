@@ -2,12 +2,18 @@
   (:require [clojure.test :refer :all]
             [aoc.year2018.day05 :refer :all]))
 
-(deftest react-once-test
-  (is (= "" (react-once "aA")))
-  (is (= "" (react-once "Aa")))
-  (is (= "aA" (react-once "abBA")))
-  (is (= "abAB" (react-once "abAB")))
-  (is (= "aabAAB" (react-once "aabAAB"))))
+(def input (-> "year2018/day05.txt"
+               (clojure.java.io/resource)
+               (slurp)
+               (clojure.string/trim)))
+
+(deftest reacts?-test
+  (is (true? (reacts? \A \a)))
+  (is (true? (reacts? \a \A)))
+  (is (false? (reacts? \A \B)))
+  (is (false? (reacts? \A \b)))
+  (is (false? (reacts? \A nil)))
+  (is (false? (reacts? nil nil))))
 
 (deftest react-test
   (is (= "" (react "aA")))
@@ -18,7 +24,8 @@
   (is (= "dabCBAcaDA" (react "dabAcCaCBAcCcaDA"))))
 
 (deftest inert-length-test
-  (is (= 10 (inert-length "dabAcCaCBAcCcaDA"))))
+  (is (= 10 (inert-length "dabAcCaCBAcCcaDA")))
+  (is (= 9238 (inert-length input))))
 
 (deftest units-test
   (is (= #{\A} (units "Aa")))
