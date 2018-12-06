@@ -2,10 +2,6 @@
   (:require [clojure.test :refer :all]
             [aoc.year2018.day06 :refer :all]))
 
-(def input (-> "year2018/day06.txt"
-                (clojure.java.io/resource)
-                (slurp)))
-
 (deftest parse-coord-test
   (is (= [1 1] (parse-coord "1, 1"))))
 
@@ -38,5 +34,11 @@
   (is (= [] (remove-infinite-clusters [0 0] [2 2] [#{[1 0] [0 1]} #{[1 2] [2 1]}]))))
 
 (deftest largest-area-test
-  (is (= 17 (largest-area [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]])))
-  (is (= 3449 (largest-area (parse-coords input)))))
+  (is (= 17 (largest-area [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]]))))
+
+(deftest within-distance-from?-test
+  (is (true? (within-distance-from? [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]] 32 [4 3])))
+  (is (false? (within-distance-from? [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]] 30 [4 3]))))
+
+(deftest safest-region-size-test
+  (is (= 16 (safest-region-size 32 [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]]))))

@@ -76,3 +76,15 @@
                    bottom-right
                    (cluster grid coords))]
     (apply max 0 (map count clusters))))
+
+(defn within-distance-from?
+  [centroids distance coord]
+  (let [distances (map (partial manhattan-distance coord) centroids)
+        total-distance (apply + distances)]
+    (> distance total-distance)))
+
+(defn safest-region-size
+  [threshold coords]
+  (let [[top-left bottom-right] (get-bounding-box coords)
+        grid (points-in-grid top-left bottom-right)]
+    (count (filter (partial within-distance-from? coords threshold) grid))))
