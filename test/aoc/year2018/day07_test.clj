@@ -50,3 +50,54 @@
 (deftest topo-sort-test
   (is (= "CABDFE" (apply str (topo-sort (parse-input example-input)))))
   (is (= "ACBDESULXKYZIMNTFGWJVPOHRQ" (apply str (topo-sort (parse-input input))))))
+
+(deftest time-required-for-step-test
+  (is (= 61 (time-required-for-step 60 \A)))
+  (is (= 1 (time-required-for-step 0 \A))))
+
+(deftest time-required-for-steps-test
+  (is (= {\A 61 \B 62 \Z 86} (time-required-for-steps 60 [\A \B \Z])))
+  (is (= {\A 1 \B 2 \Z 26} (time-required-for-steps 0 [\A \B \Z]))))
+
+(deftest available?-test
+  (is (true? (available? {\A #{}} \A)))
+  (is (false? (available? {\A #{\B}} \A))))
+
+(deftest decrement-time-left-test
+  (is (= {\A 0 \B 1} (decrement-time-left {\A 1 \B 2} [\A \B]))))
+
+(deftest completed-steps-test
+  (is (= #{\A} (completed-steps {\A 0})))
+  (is (= #{\A} (completed-steps {\A 0 \B 1}))))
+
+(deftest tick-test
+  (is (= [{\B #{}}
+          [\B]
+          {\A 0
+           \B 2}]
+         (tick 1
+               {\A #{} \B #{\A}}
+               [\A \B]
+               {\A 1 \B 2})))
+  (is (= [
+          {\B #{}}
+          [\B]
+          {\A 0
+           \B 2}]
+         (tick 2
+               {\A #{} \B #{\A}}
+               [\A \B]
+               {\A 1 \B 2})))
+  (is (= [{\B #{} \C #{}}
+          [\C \B]
+          {\A 0
+           \B 2
+           \C 2}]
+         (tick 2
+               {\A #{} \B #{\A} \C #{}}
+               [\A \C \B]
+               {\A 1 \B 2 \C 3}))))
+
+(deftest construct-test
+  (let [reqs (parse-input example-input)]
+    (is (= 15 (construct 2 0 reqs (topo-sort reqs))))))
