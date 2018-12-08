@@ -85,29 +85,42 @@
        (map first)
        (into #{})))
 
+(defn remove-completed-steps
+  "Removes steps with zero time left from `time-left`."
+  [time-left]
+  (into {} (for [[step left] time-left
+                 :when (< 0 left)]
+             [step left])))
+
 (defn tick
-  [num-workers dlist steps time-left]
-  (let [ready (take num-workers (filter (available-steps dlist) steps))
-        time-left (decrement-time-left time-left ready)
+  [num-workers in-progress dlist steps time-left]
+  (let [available-workers (- num-workers (count in-progress))
+        ready (take available-workers (->> steps
+                                           (filter (available-steps dlist))
+                                           (remove in-progress)
+                                           (into #{})))
+        in-progress (apply conj in-progress ready)
+        time-left (decrement-time-left time-left in-progress)
         done (completed-steps time-left)
-        steps (remove (into #{} done) steps)
+        steps (remove done steps)
+        in-progress (clojure.set/difference in-progress done)
         dlist (apply dissoc dlist done)
         dlist (reduce remove-dependency dlist done)]
-    (do (println ready)
-      [dlist steps time-left])))
+    [in-progress dlist steps time-left]))
 
 (defn construct
   "Returns the time taken to fully execute `steps` in order with `num-workers` and given `reqs`."
   [num-workers base reqs steps]
-  (loop [dlist (build-dependency-list reqs)
+  (loop [in-progress #{}
+         dlist (build-dependency-list reqs)
          steps steps
          time-left (time-required-for-steps base (all-steps reqs))
          time 0]
-    (println dlist steps time-left time)
     (if (empty? steps)
       time
-      (let [[dlist steps time-left] (tick num-workers dlist steps time-left)]
-        (recur dlist
+      (let [[in-progress dlist steps time-left] (tick num-workers in-progress dlist steps time-left)]
+        (recur in-progress
+               dlist
                steps
                time-left
                (inc time))))))

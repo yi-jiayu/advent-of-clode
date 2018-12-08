@@ -70,34 +70,50 @@
   (is (= #{\A} (completed-steps {\A 0})))
   (is (= #{\A} (completed-steps {\A 0 \B 1}))))
 
+(deftest remove-completed-steps-test
+  (is (= {\B 1} (remove-completed-steps {\A 0 \B 1}))))
+
 (deftest tick-test
-  (is (= [{\B #{}}
-          [\B]
-          {\A 0
-           \B 2}]
-         (tick 1
-               {\A #{} \B #{\A}}
-               [\A \B]
-               {\A 1 \B 2})))
-  (is (= [
-          {\B #{}}
-          [\B]
-          {\A 0
-           \B 2}]
-         (tick 2
-               {\A #{} \B #{\A}}
-               [\A \B]
-               {\A 1 \B 2})))
-  (is (= [{\B #{} \C #{}}
-          [\C \B]
-          {\A 0
-           \B 2
-           \C 2}]
-         (tick 2
-               {\A #{} \B #{\A} \C #{}}
-               [\A \C \B]
-               {\A 1 \B 2 \C 3}))))
+  (testing "when 1/1 workers and 1 step is available"
+    (is (= [#{}
+            {\B #{}}
+            [\B]
+            {\A 0
+             \B 2}]
+           (tick 1
+                 #{}
+                 {\A #{} \B #{\A}}
+                 [\A \B]
+                 {\A 1 \B 2}))))
+  (testing "when 2/2 workers and 2 steps are available"
+    (is (= [#{}
+            {\B #{}}
+            [\B]
+            {\A 0
+             \B 2
+             \C 0}]
+           (tick 2
+                 #{}
+                 {\A #{} \B #{\A} \C #{}}
+                 [\A \C \B]
+                 {\A 1 \B 2 \C 1}))))
+  (testing "when 1 step is in progress and 1 worker and 1 step is available"
+    (is (= [#{\B}
+            {\B #{} \C #{\B}}
+            [\B \C]
+            {\A 0
+             \B 1
+             \C 2}]
+           (tick 2
+                 #{\A}
+                 {\A #{} \B #{} \C #{\B}}
+                 [\A \B \C]
+                 {\A 1
+                  \B 2
+                  \C 2})))))
 
 (deftest construct-test
   (let [reqs (parse-input example-input)]
-    (is (= 15 (construct 2 0 reqs (topo-sort reqs))))))
+    (is (= 15 (construct 2 0 reqs (topo-sort reqs)))))
+  (let [reqs (parse-input input)]
+    (is (= 980 (construct 5 60 reqs (topo-sort reqs))))))
