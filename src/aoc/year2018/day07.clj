@@ -1,4 +1,5 @@
-(ns aoc.year2018.day07)
+(ns aoc.year2018.day07
+  (:require [clojure.set :refer [difference]]))
 
 (defn parse-line
   "Parses one line of the input"
@@ -103,7 +104,7 @@
         time-left (decrement-time-left time-left in-progress)
         done (completed-steps time-left)
         steps (remove done steps)
-        in-progress (clojure.set/difference in-progress done)
+        in-progress (difference in-progress done)
         dlist (apply dissoc dlist done)
         dlist (reduce remove-dependency dlist done)]
     [in-progress dlist steps time-left]))
