@@ -86,12 +86,13 @@
        (map first)
        (into #{})))
 
-(defn remove-completed-steps
-  "Removes steps with zero time left from `time-left`."
-  [time-left]
-  (into {} (for [[step left] time-left
-                 :when (< 0 left)]
-             [step left])))
+(defn work-on
+  "Returns the completed steps and updated in-progress and time-left after working on the jobs in progress for one time step."
+  [in-progress time-left]
+  (let [time-left (decrement-time-left time-left in-progress)
+        done (completed-steps time-left)
+        in-progress (difference in-progress done)]
+    [done in-progress time-left]))
 
 (defn tick
   [num-workers in-progress dlist steps time-left]
@@ -101,12 +102,11 @@
                                            (remove in-progress)
                                            (into #{})))
         in-progress (apply conj in-progress ready)
-        time-left (decrement-time-left time-left in-progress)
-        done (completed-steps time-left)
+        [done in-progress time-left] (work-on in-progress time-left)
         steps (remove done steps)
-        in-progress (difference in-progress done)
-        dlist (apply dissoc dlist done)
-        dlist (reduce remove-dependency dlist done)]
+        dlist (as-> dlist dlist
+                    (apply dissoc dlist done)
+                    (reduce remove-dependency dlist done))]
     [in-progress dlist steps time-left]))
 
 (defn construct

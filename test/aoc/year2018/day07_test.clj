@@ -70,8 +70,8 @@
   (is (= #{\A} (completed-steps {\A 0})))
   (is (= #{\A} (completed-steps {\A 0 \B 1}))))
 
-(deftest remove-completed-steps-test
-  (is (= {\B 1} (remove-completed-steps {\A 0 \B 1}))))
+(deftest work-on-test
+  (is (= [#{\A} #{\B} {\A 0 \B 1}] (work-on #{\A \B} {\A 1 \B 2}))))
 
 (deftest tick-test
   (testing "when 1/1 workers and 1 step is available"
