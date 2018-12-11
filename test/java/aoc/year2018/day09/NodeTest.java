@@ -36,7 +36,7 @@ class NodeTest {
         node1.insertAfter(1);
         Node node2 = node1.insertAfter(2);
 
-        assertEquals(node1.value, 0);
+        assertEquals(0, node1.value);
         assertEquals(2, node1.next.value);
         assertEquals(1, node1.prev.value);
         assertEquals(2, node2.value);
