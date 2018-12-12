@@ -53,3 +53,19 @@
   (is (= [0 1] (index-to-coord 3 4 2 1 1)))
   (is (= [1 0] (index-to-coord 3 4 2 1 3)))
   (is (= [1 1] (index-to-coord 3 4 2 1 4))))
+
+(deftest calculate-power-levels-test
+  (is (= '((4 -5 -4)
+            (-4 -2 -1)
+            (-2 0 1))
+         (calculate-power-levels 3 8199)))
+  (is (= '((4 -5 -4 -3)
+            (-4 -2 -1 0)
+            (-2 0 1 3)
+            (0 2 4 -5))
+         (calculate-power-levels 4 8199))))
+
+(deftest find-highest-power-region-test
+  (is (= [2 [1 1]] (find-highest-power-region 4 8199)))
+  (is (= [30 [21 61]] (find-highest-power-region 300 42)))
+  (is (= [28 [235 87]] (find-highest-power-region 300 8199))))
