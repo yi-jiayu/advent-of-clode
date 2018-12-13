@@ -2,10 +2,10 @@
   (:require [clojure.string :refer [trimr split-lines] :as strings]
             [aoc.core :refer [vadd]]))
 
-(def directions {:up    [0 -1]
-                 :down  [0 1]
-                 :left  [-1 0]
-                 :right [1 0]})
+(def directions {:up    [-1 0]
+                 :down  [1 0]
+                 :left  [0 -1]
+                 :right [0 1]})
 
 (def turn-left {:up    :left
                 :down  :right
@@ -23,6 +23,9 @@
 
 (defrecord Cart [position direction state])
 
+(defmethod print-method Cart [cart ^java.io.Writer w]
+  (.write w (str "Cart" (vals (into {} cart)))))
+
 (defn remove-carts-from-track
   "Replaces carts with a pieces of track in the appropriate direction."
   [track]
@@ -33,12 +36,12 @@
 
 (defn make-cart
   "Makes a cart given its initial position and character representation, returning nil if character does not represent a cart."
-  [y x c]
+  [row col c]
   (when-let [direction ({\^ :up
                          \v :down
                          \< :left
                          \> :right} c)]
-    (->Cart [x y] direction 0)))
+    (->Cart [row col] direction 0)))
 
 (defn carts-in-row
   "Returns all the carts represented in row `n`"
@@ -55,8 +58,8 @@
 (defn move-cart
   "Moves cart one step along track."
   [track {:keys [direction position state]}]
-  (let [[x' y'] (vadd position (directions direction))
-        track-piece (get-in track [y' x'])
+  (let [position' (vadd position (directions direction))
+        track-piece (get-in track position')
         [direction' state'] (cond
                               (and (#{:left :right} direction) (= track-piece \/)) [(turn-left direction) state]
                               (and (#{:left :right} direction) (= track-piece \\)) [(turn-right direction) state]
@@ -64,12 +67,12 @@
                               (and (#{:up :down} direction) (= track-piece \\)) [(turn-left direction) state]
                               (= track-piece \+) [((next-turn state) direction) (rem (inc state) 3)]
                               :else [direction state])]
-    (->Cart [x' y'] direction' state')))
+    (->Cart position' direction' state')))
 
 (defn sort-carts
   "Sorts carts in the order they will move each tick."
   [carts]
-  (sort-by (juxt (comp second :position) (comp first :position)) carts))
+  (sort-by :position carts))
 
 (defn tick
   "Moves each cart in order and returns their new positions and the location of the first collision, if any."
@@ -94,7 +97,7 @@
   (let [track' (into [] (map (partial into []) track))]
     (->> (reduce (fn [track cart]
                    (assoc-in track
-                             (reverse (:position cart))
+                             (:position cart)
                              (case (:direction cart)
                                :up \^
                                :down \v
@@ -113,7 +116,7 @@
     (if collision
       collision
       (let [[carts collision] (tick track carts)]
-        (prn track carts)
+        (prn track carts collision)
         (println (render-carts-on-track track carts))
         (recur carts
                collision)))))
