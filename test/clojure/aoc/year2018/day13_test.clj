@@ -3,6 +3,7 @@
             [aoc.year2018.day13 :refer :all]))
 
 (def example-input "/->-\\        \n|   |  /----\\\n| /-+--+-\\  |\n| | |  | v  |\n\\-+-/  \\-+--/\n  \\------/   \n")
+(def input (slurp (clojure.java.io/resource "year2018/day13.txt")))
 
 (deftest remove-carts-from-track-test
   (is (= ["  |  "
@@ -108,5 +109,6 @@
                (->Cart [4 0] :up 0)]]
     (is (= [3 0] (run-until-collision track carts))))
   (let [[track carts] (parse-input example-input)]
-    (is (= [3 7] (run-until-collision track carts)))
-    ))
+    (is (= [3 7] (run-until-collision track carts))))
+  (let [[track carts] (parse-input input)]
+    (is (= [62 117] (run-until-collision track carts)))))

@@ -29,7 +29,7 @@
 (defn remove-carts-from-track
   "Replaces carts with a pieces of track in the appropriate direction."
   [track]
-  (map #(-> %
+  (mapv #(-> %
             (strings/replace #"\^|v" "|")
             (strings/replace #"<|>" "-"))
        track))
@@ -116,7 +116,5 @@
     (if collision
       collision
       (let [[carts collision] (tick track carts)]
-        (prn track carts collision)
-        (println (render-carts-on-track track carts))
         (recur carts
                collision)))))
