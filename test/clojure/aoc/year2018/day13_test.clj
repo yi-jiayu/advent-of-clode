@@ -82,9 +82,8 @@
     (is (= [[(->Cart [2 0] :down 0)
              (->Cart [4 0] :up 0)] nil] (tick track [(->Cart [1 0] :down 0)
                                                      (->Cart [5 0] :up 0)])))
-    (is (= [[(->Cart [3 0] :down 0)
-             (->Cart [3 0] :up 0)] [3 0]] (tick track [(->Cart [2 0] :down 0)
-                                                       (->Cart [4 0] :up 0)]))))
+    (is (= [nil [3 0]] (tick track [(->Cart [2 0] :down 0)
+                                    (->Cart [4 0] :up 0)]))))
   (let [track ["/---\\"
                "|   |  /----\\"
                "| /-+--+-\\  |"
@@ -112,3 +111,18 @@
     (is (= [3 7] (run-until-collision track carts))))
   (let [[track carts] (parse-input input)]
     (is (= [62 117] (run-until-collision track carts)))))
+
+(deftest tick'-test
+  (let [[track carts] (parse-input "/>-<\\  \n|   |  \n| /<+-\\\n| | | v\n\\>+</ |\n  |   ^\n  \\<->/")]
+    (is (= [(->Cart [2 2] :down 0)
+            (->Cart [6 2] :up 0)
+            (->Cart [6 6] :up 0)] (tick' track carts)))))
+
+(deftest run-until-one-cart-left-test
+  (let [[track carts] (parse-input "/>-<\\  \n|   |  \n| /<+-\\\n| | | v\n\\>+</ |\n  |   ^\n  \\<->/")]
+    (is (= [4 6] (run-until-one-cart-left track carts))))
+  (let [[track carts] (parse-input example-input)
+        carts (conj carts (->Cart [2 0] :down 0))]
+    (is (= [2 7] (run-until-one-cart-left track carts))))
+  (let [[track carts] (parse-input input)]
+    (is (= [89 138] (run-until-one-cart-left track carts)))))

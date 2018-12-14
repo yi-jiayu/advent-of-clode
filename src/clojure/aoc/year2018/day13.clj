@@ -2,6 +2,8 @@
   (:require [clojure.string :refer [trimr split-lines] :as strings]
             [aoc.core :refer [vadd]]))
 
+(def ^:dynamic *debug* false)
+
 (def directions {:up    [-1 0]
                  :down  [1 0]
                  :left  [0 -1]
@@ -30,9 +32,9 @@
   "Replaces carts with a pieces of track in the appropriate direction."
   [track]
   (mapv #(-> %
-            (strings/replace #"\^|v" "|")
-            (strings/replace #"<|>" "-"))
-       track))
+             (strings/replace #"\^|v" "|")
+             (strings/replace #"<|>" "-"))
+        track))
 
 (defn make-cart
   "Makes a cart given its initial position and character representation, returning nil if character does not represent a cart."
@@ -65,7 +67,7 @@
                               (and (#{:left :right} direction) (= track-piece \\)) [(turn-right direction) state]
                               (and (#{:up :down} direction) (= track-piece \/)) [(turn-right direction) state]
                               (and (#{:up :down} direction) (= track-piece \\)) [(turn-left direction) state]
-                              (= track-piece \+) [((next-turn state) direction) (rem (inc state) 3)]
+                              (= track-piece \+) [((next-turn state) direction) (rem (inc state) (count next-turn))]
                               :else [direction state])]
     (->Cart position' direction' state')))
 
@@ -78,18 +80,15 @@
   "Moves each cart in order and returns their new positions and the location of the first collision, if any."
   [track carts]
   (let [sorted-carts (sort-carts carts)
-        [carts' collisions _] (reduce (fn [[carts' collisions positions] cart]
-                                        (let [cart' (move-cart track cart)
-                                              position (:position cart')
-                                              collisions (if (positions position)
-                                                           (conj collisions position)
-                                                           collisions)
-                                              positions (conj positions position)
-                                              carts' (conj carts' cart')]
-                                          [carts' collisions positions]))
-                                      [[] [] #{}]
-                                      sorted-carts)]
-    [carts' (first collisions)]))
+        [carts' collision] (reduce (fn [[carts' _] cart]
+                                     (let [cart' (move-cart track cart)
+                                           position (:position cart')]
+                                       (if (carts' position)
+                                         (reduced [carts' position])
+                                         [(assoc carts' position cart') nil])))
+                                   [{} nil]
+                                   sorted-carts)]
+    [(when (not collision) (vals carts')) collision]))
 
 (defn render-carts-on-track
   "Returns a string displaying carts on track."
@@ -118,3 +117,26 @@
       (let [[carts collision] (tick track carts)]
         (recur carts
                collision)))))
+
+(defn tick'
+  "Moves each cart in order and returns their new positions. If any two carts
+  collide, they are both removed from the result."
+  [track carts]
+  (let [sorted-carts (sort-carts carts)
+        carts' (reduce (fn [carts cart]
+                         (let [cart' (move-cart track cart)
+                               position (:position cart')]
+                           (if (contains? carts position)
+                             (dissoc carts position)
+                             (assoc carts position cart'))))
+                       {}
+                       sorted-carts)]
+    (vals carts')))
+
+(defn run-until-one-cart-left
+  "Runs carts on track, removing carts that collide, until only one cart remains."
+  [track carts]
+  (loop [carts carts]
+    (if (>= 1 (count carts))
+      (:position (first carts))
+      (recur (tick' track carts)))))
