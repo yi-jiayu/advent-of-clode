@@ -76,6 +76,8 @@
   [carts]
   (sort-by :position carts))
 
+; todo: account for carts colliding with another cart which hasn't moved.
+; this wasn't an issue with part 1 but does affect the correctness of the answer.
 (defn tick
   "Moves each cart in order and returns their new positions and the location of the first collision, if any."
   [track carts]
@@ -122,16 +124,20 @@
   "Moves each cart in order and returns their new positions. If any two carts
   collide, they are both removed from the result."
   [track carts]
-  (let [sorted-carts (sort-carts carts)
-        carts' (reduce (fn [carts cart]
-                         (let [cart' (move-cart track cart)
-                               position (:position cart')]
-                           (if (contains? carts position)
-                             (dissoc carts position)
-                             (assoc carts position cart'))))
-                       {}
+  (let [positions-carts (into {} (for [cart carts] [(:position cart) cart]))
+        sorted-carts (sort-carts carts)
+        carts' (reduce (fn [position-carts cart]
+                         (if (contains? position-carts (:position cart))
+                           (let [positions-carts (dissoc position-carts (:position cart))
+                                 cart' (move-cart track cart)
+                                 position' (:position cart')]
+                             (if (contains? positions-carts position')
+                               (dissoc positions-carts position')
+                               (assoc positions-carts position' cart')))
+                           position-carts))
+                       positions-carts
                        sorted-carts)]
-    (vals carts')))
+    (into #{} (vals carts'))))
 
 (defn run-until-one-cart-left
   "Runs carts on track, removing carts that collide, until only one cart remains."

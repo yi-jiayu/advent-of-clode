@@ -114,9 +114,14 @@
 
 (deftest tick'-test
   (let [[track carts] (parse-input "/>-<\\  \n|   |  \n| /<+-\\\n| | | v\n\\>+</ |\n  |   ^\n  \\<->/")]
-    (is (= [(->Cart [2 2] :down 0)
-            (->Cart [6 2] :up 0)
-            (->Cart [6 6] :up 0)] (tick' track carts)))))
+    (is (= #{(->Cart [2 2] :down 0)
+             (->Cart [6 2] :up 0)
+             (->Cart [6 6] :up 0)} (tick' track carts))))
+  (let [track ["--------"]
+        carts [(->Cart [0 2] :right 0)
+               (->Cart [0 3] :left 0)
+               (->Cart [0 4] :right 0)]]
+    (is (= #{(->Cart [0 5] :right 0)} (tick' track carts)))))
 
 (deftest run-until-one-cart-left-test
   (let [[track carts] (parse-input "/>-<\\  \n|   |  \n| /<+-\\\n| | | v\n\\>+</ |\n  |   ^\n  \\<->/")]
@@ -125,4 +130,4 @@
         carts (conj carts (->Cart [2 0] :down 0))]
     (is (= [2 7] (run-until-one-cart-left track carts))))
   (let [[track carts] (parse-input input)]
-    (is (= [89 138] (run-until-one-cart-left track carts)))))
+    (is (= [67 69] (run-until-one-cart-left track carts)))))
