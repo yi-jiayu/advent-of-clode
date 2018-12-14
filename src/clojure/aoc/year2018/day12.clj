@@ -39,7 +39,7 @@
 
 (defn next-generation
   "Simulates the next generation of pots given the current generation."
-  [rules pots start]
+  [rules [pots start]]
   (let [pots' (concat "...." pots "....")]
     (trim-edges (map #(rules % \.) (partition 5 1 pots'))
                 (- start 2))))
@@ -47,11 +47,23 @@
 (defn simulate
   "Simulate the propogation of plants for `n` generations."
   [n rules pots start]
-  (nth
-    (iterate (partial apply next-generation rules) [pots start])
-    n))
+  (loop [iteration 0
+         state [pots start]]
+    (if (zero? (rem iteration 10000)) (println iteration))
+    (if (>= iteration n)
+      state
+      (recur (inc iteration)
+             (next-generation rules state)))))
 
 (defn sum-pot-numbers-with-plants
   "Sums up all pot numbers containing plants."
   [pots start]
   (apply + (keep-indexed (fn [index item] (if (= \# item) (+ start index))) pots)))
+
+(defn align-pots
+  "Aligns mulitple pot states based on the first pot."
+  [states]
+  (let [pots (map (comp (partial apply str) first) states)
+        offsets (map second states)
+        max-offset (- (apply min offsets))]
+    (map (fn [pots offset] (str (apply str (repeat (+ max-offset offset) \.)) pots)) pots offsets)))
