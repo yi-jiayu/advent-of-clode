@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClojureProjectResolveSettings">
-    <currentScheme>IDE</currentScheme>
+    <item key="aoc.year2018.day16/binopri" resolves-as="clojure.core/defn" />
+    <item key="aoc.year2018.day16/binopir" resolves-as="clojure.core/defn" />
+    <item key="aoc.year2018.day16/binoprr" resolves-as="clojure.core/defn" />
+    <currentScheme>PROJECT</currentScheme>
   </component>
 </project>

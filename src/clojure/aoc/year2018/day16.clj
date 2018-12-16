@@ -1,17 +1,67 @@
 (ns aoc.year2018.day16)
 
-(defmacro binop
-  [name op]
-  `(do
-     ~(list 'defn (symbol (str name \r))
-            '[regs a b c]
-            (list 'assoc 'regs 'c (list op '(regs a) '(regs b))))
-     ~(list 'defn (symbol (str name \i))
-            '[regs a b c]
-            (list 'assoc 'regs 'c (list op '(regs a) 'b)))))
+(defmacro binoprr
+  [name op doc]
+  (list 'defn name
+        doc
+        '[regs a b c]
+        (list 'assoc 'regs 'c (list op '(regs a) '(regs b)))))
 
-(binop add +)
-(binop mul *)
-(binop ban bit-and)
-(binop bor bit-or)
 
+(defmacro binopir
+  [name op doc]
+  (list 'defn name
+        doc
+        '[regs a b c]
+        (list 'assoc 'regs 'c (list op 'a '(regs b)))))
+
+(defmacro binopri
+  [name op doc]
+  (list 'defn name
+        doc
+        '[regs a b c]
+        (list 'assoc 'regs 'c (list op '(regs a) 'b))))
+
+(binoprr addr +'
+  "addr (add register) stores into register C the result of adding register A and register B.")
+
+(binopri addi +
+  "addi (add immediate) stores into register C the result of adding register A and value B.")
+
+(binoprr mulr *
+  "mulr (multiply register) stores into register C the result of multiplying register A and register B.")
+(binopri muli *
+  "muli (multiply immediate) stores into register C the result of multiplying register A and value B.")
+
+(binoprr banr bit-and
+  "(bitwise AND register) stores into register C the result of the bitwise AND of register A and register B.")
+(binopri bani bit-and
+  "(bitwise AND immediate) stores into register C the result of the bitwise AND of register A and value B.")
+
+(binoprr borr bit-or
+  "borr (bitwise OR register) stores into register C the result of the bitwise OR of register A and register B.")
+(binopri bori bit-or
+  "bori (bitwise OR immediate) stores into register C the result of the bitwise OR of register A and value B.")
+
+(binopri setr (fn [a _] a)
+  "setr (set register) copies the contents of register A into register C. (Input B is ignored.)")
+(binopir seti (fn [a _] a)
+  "seti (set immediate) stores value A into register C. (Input B is ignored.)")
+
+(binopir gtir (fn [a b] (if (> a b) 1 0))
+  "gtir (greater-than immediate/register) sets register C to 1 if value A is greater than register B. Otherwise, register C is set to 0.")
+
+(binopri gtri (fn [a b] (if (> a b) 1 0))
+  "gtri (greater-than register/immediate) sets register C to 1 if register A is greater than value B. Otherwise, register C is set to 0.")
+
+(binoprr gtrr (fn [a b] (if (> a b) 1 0))
+  "gtrr (greater-than register/register) sets register C to 1 if register A is greater than register B. Otherwise, register C is set to 0.")
+
+(binopir eqir (fn [a b] (if (= a b) 1 0))
+  "eqir (equal immediate/register) sets register C to 1 if value A is equal to register B. Otherwise, register C is set to 0.")
+
+(binopri eqri (fn [a b] (if (= a b) 1 0))
+  "eqri (equal register/immediate) sets register C to 1 if register A is equal to value B. Otherwise, register C is set to 0.")
+
+(binoprr eqrr (fn [a b] (if (= a b) 1 0))
+  "eqrr (equal register/register) sets register C to 1 if register A is equal to register B. Otherwise, register C is set to 0.")
