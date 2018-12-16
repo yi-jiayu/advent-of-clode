@@ -77,10 +77,20 @@
   (is (true? (matches? seti [3 2 1 1] [2 1 2] [3 2 2 1])))
   (is (false? (matches? gtri [3 2 1 1] [2 1 2] [3 2 2 1]))))
 
+(deftest matching-opcodes-test
+  (is (= #{mulr addi seti} (matching-opcodes (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1]) opcodes))))
+
 (deftest count-matching-opcodes-test
-  (is (= 3 (count-matching-opcodes (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])))))
+  (is (= 3 (count-matching-opcodes (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1]) opcodes))))
 
 (deftest matches-per-sample-test
   (is (= [3 3] (matches-per-sample [(->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])
                                     (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])])))
   (is (= 500 (count (filter (partial <= 3) (matches-per-sample (parse-samples input)))))))
+
+(deftest solve-for-opcodes-test
+  (let [opcodes [addr mulr]
+        samples [(->Sample [0 0 1 2] [2 3 0 0] [2 3 5 0])
+                 (->Sample [1 0 1 2] [2 3 0 0] [2 3 6 0])]]
+    (is (= {0 addr
+            1 mulr} (solve-for-opcodes opcodes samples)))))

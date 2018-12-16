@@ -162,12 +162,35 @@
   [opcode regs [a b c] expected]
   (= (opcode regs a b c) expected))
 
+(defn matching-opcodes
+  "Returns the opcodes which could have produced the result seen in sample."
+  [{[_ a b c] :instruction before :before after :after} opcodes]
+  (into #{} (filter #(matches? % before [a b c] after) opcodes)))
+
 (defn count-matching-opcodes
   "Returns the number of opcodes which could have produced the result seen in sample."
-  [{[_ a b c] :instruction before :before after :after}]
-  (count (filter #(matches? % before [a b c] after) opcodes)))
+  [sample opcodes]
+  (count (matching-opcodes sample opcodes)))
 
 (defn matches-per-sample
   "Returns the number of matches for each sample in samples."
   [samples]
-  (map #(count-matching-opcodes %) samples))
+  (map #(count-matching-opcodes % opcodes) samples))
+
+(defn solve-for-opcodes
+  "Determines which number each opcode corresponds to based on samples."
+  [opcodes samples]
+  (loop [remaining-opcodes (into #{} opcodes)
+         numbers-to-opcodes {}
+         solved-opcodes #{}]
+    (if (= (count opcodes) (count solved-opcodes))
+      numbers-to-opcodes
+      (let [unsolved-opcodes (remove (fn [{[number] :instruction}] (solved-opcodes number)) samples)
+            [number candidates] (->> unsolved-opcodes
+                                     (map (fn [{[number] :instruction :as sample}] [number (matching-opcodes sample remaining-opcodes)]))
+                                     (filter (fn [[_ candidates]] (= 1 (count candidates))))
+                                     first)
+            opcode (first candidates)]
+        (recur (disj remaining-opcodes opcode)
+               (assoc numbers-to-opcodes number opcode)
+               (conj solved-opcodes number))))))
