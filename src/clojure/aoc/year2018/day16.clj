@@ -127,6 +127,10 @@
 
 (defrecord Sample [instruction before after])
 
+(defn parse-instruction
+  [instr]
+  (mapv #(Integer/parseInt %) (clojure.string/split instr #" ")))
+
 (defn parse-sample
   "Returns the instruction sampled as well as the registers before and after."
   [sample]
@@ -138,9 +142,7 @@
                      (re-matches #"Before: \[(.+)\]" %%)
                      (clojure.string/split (second %%) #", ")
                      (mapv #(Integer/parseInt %) %%))
-        instruction (as-> line2 %%
-                          (clojure.string/split %% #" ")
-                          (mapv #(Integer/parseInt %) %%))
+        instruction (parse-instruction line2)
         after (as-> line3 %%
                     (re-matches #"After:  \[(.+)\]" %%)
                     (clojure.string/split (second %%) #", ")
@@ -151,11 +153,25 @@
   "Returns all the samples in input."
   [input]
   (as-> input %
-        (clojure.string/split % #"\n\n\n")
-        (first %)
         (clojure.string/trim %)
         (clojure.string/split % #"\n\n")
         (map parse-sample %)))
+
+(defn parse-program
+  "Returns a list of instructions."
+  [program]
+  (->> program
+       clojure.string/trim
+       clojure.string/split-lines
+       (map #(clojure.string/trim %))
+       (mapv parse-instruction)))
+
+(defn parse-input
+  "Returns a map containing the samples and sample program found in input."
+  [input]
+  (let [[samples program] (clojure.string/split input #"\n\n\n\n")]
+    {:samples (parse-samples samples)
+     :program (parse-program program)}))
 
 (defn matches?
   "Returns true if (opcode regs a b c) is equal to expected."
@@ -194,3 +210,11 @@
         (recur (disj remaining-opcodes opcode)
                (assoc numbers-to-opcodes number opcode)
                (conj solved-opcodes number))))))
+
+(defn run-program
+  "Runs program using the given opcode map."
+  [opcode-map program]
+  (reduce
+    (fn [regs [opcode a b c]] ((opcode-map opcode) regs a b c))
+    [0 0 0 0]
+    program))

@@ -61,6 +61,9 @@
   (is (= [1 1 1 0] (eqrr [1 1 2 0] 0 1 2)))
   (is (= [1 2 0 0] (eqrr [1 2 2 0] 0 1 2))))
 
+(deftest parse-instruction-test
+  (is (= [5 0 2 1] (parse-instruction "5 0 2 1"))))
+
 (deftest parse-sample-test
   (is (= (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])
          (parse-sample "Before: [3, 2, 1, 1]\n9 2 1 2\nAfter:  [3, 2, 2, 1]\n"))))
@@ -70,6 +73,23 @@
           (->Sample [3 3 2 3] [0 2 3 2] [0 2 3 4])
           (->Sample [10 1 2 3] [2 1 0 0] [2 1 0 2])]
          (parse-samples "Before: [0, 3, 3, 0]\n5 0 2 1\nAfter:  [0, 0, 3, 0]\n\nBefore: [0, 2, 3, 2]\n3 3 2 3\nAfter:  [0, 2, 3, 4]\n\nBefore: [2, 1, 0, 0]\n10 1 2 3\nAfter:  [2, 1, 0, 2]"))))
+
+(deftest parse-program-test
+  (is (= [[12 3 3 2]
+          [12 3 2 0]
+          [12 2 1 1]
+          [0 1 2 1]
+          [10 1 1 1]] (parse-program "12 3 3 2\n12 3 2 0\n12 2 1 1\n0 1 2 1\n10 1 1 1\n"))))
+
+(deftest parse-input-test
+  (is (= {:samples [(->Sample [5 0 2 1] [0 3 3 0] [0 0 3 0])
+                    (->Sample [3 3 2 3] [0 2 3 2] [0 2 3 4])
+                    (->Sample [10 1 2 3] [2 1 0 0] [2 1 0 2])]
+          :program [[12 3 3 2]
+                    [12 3 2 0]
+                    [12 2 1 1]
+                    [0 1 2 1]]}
+         (parse-input "Before: [0, 3, 3, 0]\n5 0 2 1\nAfter:  [0, 0, 3, 0]\n\nBefore: [0, 2, 3, 2]\n3 3 2 3\nAfter:  [0, 2, 3, 4]\n\nBefore: [2, 1, 0, 0]\n10 1 2 3\nAfter:  [2, 1, 0, 2]\n\n\n\n12 3 3 2\n12 3 2 0\n12 2 1 1\n0 1 2 1\n"))))
 
 (deftest matches?-test
   (is (true? (matches? mulr [3 2 1 1] [2 1 2] [3 2 2 1])))
@@ -86,7 +106,7 @@
 (deftest matches-per-sample-test
   (is (= [3 3] (matches-per-sample [(->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])
                                     (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])])))
-  (is (= 500 (count (filter (partial <= 3) (matches-per-sample (parse-samples input)))))))
+  (is (= 500 (count (filter (partial <= 3) (matches-per-sample (:samples (parse-input input))))))))
 
 (deftest solve-for-opcodes-test
   (let [opcodes [addr mulr]
@@ -94,3 +114,8 @@
                  (->Sample [1 0 1 2] [2 3 0 0] [2 3 6 0])]]
     (is (= {0 addr
             1 mulr} (solve-for-opcodes opcodes samples)))))
+
+(deftest run-program-test
+  (let [{:keys [samples program]} (parse-input input)
+        opcode-map (solve-for-opcodes opcodes samples)]
+    (is (= [533 533 3 3] (run-program opcode-map program)))))
