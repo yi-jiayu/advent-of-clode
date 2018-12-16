@@ -121,3 +121,53 @@
 (binoprr eqrr (fn [a b] (if (= a b) 1 0))
   "eqrr (equal register/register) sets register C to 1 if register A is equal
   to register B. Otherwise, register C is set to 0.")
+
+(def opcodes [eqrr eqir addr addi borr seti gtrr banr
+              setr muli mulr eqri gtri bani bori gtir])
+
+(defrecord Sample [instruction before after])
+
+(defn parse-sample
+  "Returns the instruction sampled as well as the registers before and after."
+  [sample]
+  (let [[line1 line2 line3] (->> sample
+                                 clojure.string/trim
+                                 clojure.string/split-lines
+                                 (map clojure.string/trim))
+        before (as-> line1 %%
+                     (re-matches #"Before: \[(.+)\]" %%)
+                     (clojure.string/split (second %%) #", ")
+                     (mapv #(Integer/parseInt %) %%))
+        instruction (as-> line2 %%
+                          (clojure.string/split %% #" ")
+                          (mapv #(Integer/parseInt %) %%))
+        after (as-> line3 %%
+                    (re-matches #"After:  \[(.+)\]" %%)
+                    (clojure.string/split (second %%) #", ")
+                    (mapv #(Integer/parseInt %) %%))]
+    (->Sample instruction before after)))
+
+(defn parse-samples
+  "Returns all the samples in input."
+  [input]
+  (as-> input %
+        (clojure.string/split % #"\n\n\n")
+        (first %)
+        (clojure.string/trim %)
+        (clojure.string/split % #"\n\n")
+        (map parse-sample %)))
+
+(defn matches?
+  "Returns true if (opcode regs a b c) is equal to expected."
+  [opcode regs [a b c] expected]
+  (= (opcode regs a b c) expected))
+
+(defn count-matching-opcodes
+  "Returns the number of opcodes which could have produced the result seen in sample."
+  [{[_ a b c] :instruction before :before after :after}]
+  (count (filter #(matches? % before [a b c] after) opcodes)))
+
+(defn matches-per-sample
+  "Returns the number of matches for each sample in samples."
+  [samples]
+  (map #(count-matching-opcodes %) samples))

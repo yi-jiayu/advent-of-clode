@@ -2,6 +2,8 @@
   (:require [clojure.test :refer :all]
             [aoc.year2018.day16 :refer :all]))
 
+(def input (slurp (clojure.java.io/resource "year2018/day16.txt")))
+
 (deftest addr-test
   (is (= [1 2 3 0] (addr [1 2 0 0] 0 1 2))))
 
@@ -58,3 +60,27 @@
 (deftest eqrr-test
   (is (= [1 1 1 0] (eqrr [1 1 2 0] 0 1 2)))
   (is (= [1 2 0 0] (eqrr [1 2 2 0] 0 1 2))))
+
+(deftest parse-sample-test
+  (is (= (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])
+         (parse-sample "Before: [3, 2, 1, 1]\n9 2 1 2\nAfter:  [3, 2, 2, 1]\n"))))
+
+(deftest parse-samples-test
+  (is (= [(->Sample [5 0 2 1] [0 3 3 0] [0 0 3 0])
+          (->Sample [3 3 2 3] [0 2 3 2] [0 2 3 4])
+          (->Sample [10 1 2 3] [2 1 0 0] [2 1 0 2])]
+         (parse-samples "Before: [0, 3, 3, 0]\n5 0 2 1\nAfter:  [0, 0, 3, 0]\n\nBefore: [0, 2, 3, 2]\n3 3 2 3\nAfter:  [0, 2, 3, 4]\n\nBefore: [2, 1, 0, 0]\n10 1 2 3\nAfter:  [2, 1, 0, 2]"))))
+
+(deftest matches?-test
+  (is (true? (matches? mulr [3 2 1 1] [2 1 2] [3 2 2 1])))
+  (is (true? (matches? addi [3 2 1 1] [2 1 2] [3 2 2 1])))
+  (is (true? (matches? seti [3 2 1 1] [2 1 2] [3 2 2 1])))
+  (is (false? (matches? gtri [3 2 1 1] [2 1 2] [3 2 2 1]))))
+
+(deftest count-matching-opcodes-test
+  (is (= 3 (count-matching-opcodes (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])))))
+
+(deftest matches-per-sample-test
+  (is (= [3 3] (matches-per-sample [(->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])
+                                    (->Sample [9 2 1 2] [3 2 1 1] [3 2 2 1])])))
+  (is (= 500 (count (filter (partial <= 3) (matches-per-sample (parse-samples input)))))))
