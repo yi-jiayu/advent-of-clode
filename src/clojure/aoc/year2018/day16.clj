@@ -1,4 +1,8 @@
-(ns aoc.year2018.day16)
+(ns aoc.year2018.day16
+  (:require [clojure.spec.alpha :as s]))
+
+(s/def ::register? (s/int-in 0 4))
+(s/def ::registers? (s/coll-of integer? :count 4))
 
 (defmacro binoprr
   [name op doc]
@@ -24,6 +28,12 @@
 
 (binoprr addr +'
   "addr (add register) stores into register C the result of adding register A and register B.")
+(s/fdef addr
+        :args (s/and (s/cat :regs ::registers? :a ::register? :b ::register? :c ::register?))
+        :ret ::registers?
+        :fn (fn [{{:keys [regs a b c]} :args ret :ret}]
+              (let [expected (+' (regs a) (regs b))]
+                (= (assoc regs c expected) ret))))
 
 (binopri addi +
   "addi (add immediate) stores into register C the result of adding register A and value B.")
