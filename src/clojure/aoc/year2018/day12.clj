@@ -49,7 +49,6 @@
   [n rules pots start]
   (loop [iteration 0
          state [pots start]]
-    (if (zero? (rem iteration 10000)) (println iteration))
     (if (>= iteration n)
       state
       (recur (inc iteration)
