@@ -5,7 +5,10 @@
   (mapv + v1 v2))
 
 (defn adjacent [xy]
-  (map (partial vadd xy) [[1 0] [-1 0] [0 1] [0 -1]]))
+  "Returns the four adjacent coordinates to coordinates `xy` on a square grid.
+  If `xy` is in the format [row col], the returned coordinates are in reading
+  order."
+  (map (partial vadd xy) [[-1 0] [0 -1] [0 1] [1 0]]))
 
 ; rotate function from https://groups.google.com/forum/#!topic/clojure/SjmevTjZPcQ
 (defn rotate

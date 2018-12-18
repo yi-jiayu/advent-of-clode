@@ -6,12 +6,13 @@
 (def ^:dynamic *debug* false)
 
 (def starting-hp 200)
+(def attack-power 3)
 
 (defrecord Battle [cavern units])
 (defrecord Unit [type hp])
 
 (defmethod print-method Battle [battle ^java.io.Writer w]
-  (.write w (str "(->Battle" (:cavern battle) (:units battle) ")")))
+  (.write w (str "(->Battle" (clojure.string/join (doall (map prn-str (:cavern battle)))) (:units battle) ")")))
 
 (defmethod print-method Unit [unit ^java.io.Writer w]
   (.write w (str "(->Unit " (:type unit) " " (:hp unit) ")")))
@@ -38,7 +39,7 @@
               \E (assoc units [row col] (->Unit \E starting-hp))
               \G (assoc units [row col] (->Unit \G starting-hp))
               units))
-          {}
+          (sorted-map)
           (enumerate2d cavern)))
 
 (defn parse-input
@@ -56,6 +57,22 @@
     (when (not (empty? targets))
       targets)))
 
+(defn find-target-in-range
+  "If a unit at `pos` is in range of at least one target in targets, returns
+  the target's position, otherwise nil. When there is more than one target in
+  range, the one with the lowest hit points remaining is chosen."
+  [{units :units} pos]
+  (let [unit-type (get-in units [pos :type])
+        adjacent (->> pos
+                      adjacent
+                      (keep (fn [pos] (when-let [{:keys [type hp]} (units pos)]
+                                        (when (not= unit-type type) [pos hp])))))]
+    (when (not (empty? adjacent))
+      (first (reduce (fn [[pos min-hp] [pos' hp]] (if (< hp min-hp)
+                                                    [pos' hp]
+                                                    [pos min-hp]))
+                     adjacent)))))
+
 (defn identify-open-squares
   "Identifies all open squares in range of each target in `targets`. If there
   are no open squares, returns nil."
@@ -69,9 +86,9 @@
   "Returns the next step to take to reach the chosen open square in `open-squares`. If
   none of the open squares are reachable, returns nil."
   [{cavern :cavern} position open-squares]
-  (let [choices (sort-by first (for [adjacent (adjacent position)
-                                     :when (= \. (get-in cavern adjacent))]
-                                 [adjacent adjacent]))]
+  (let [choices (for [adjacent (adjacent position)
+                      :when (= \. (get-in cavern adjacent))]
+                  [adjacent adjacent])]
     (loop [open (apply conj PersistentQueue/EMPTY choices)
            closed #{}]
       (when-not (empty? open)
@@ -82,100 +99,83 @@
                   available-moves (->> curr
                                        adjacent
                                        (remove closed)
-                                       (keep (fn [adj] (when (= \. (get-in cavern adj)) [choice adj])))
-                                       (sort-by first))]
-              (recur (apply conj open available-moves)
-                     (conj closed curr)))))))))
-
-(defn enemy-in-range
-  "If a unit at `start-pos` is in range of at least one enemy unit represented
-  by `target`, returns the position of the enemy unit in range with the lowest
-  hit points."
-  [battle start-pos target]
-  (let [cavern (:cavern battle)
-        enemy-positions (sort-by first (keep (fn [[pos tile]] (if (= target tile) pos))
-                                             (for [adjacent (adjacent start-pos)]
-                                               [adjacent (get-in cavern adjacent)])))]
-    (if (not (empty? enemy-positions))
-      (let [enemy-units (for [pos enemy-positions] [pos (get-in battle [:units target pos])])
-            [pos _] (reduce (fn [[pos min-hp] [unit-pos unit-hp]] (if (< unit-hp min-hp)
-                                                                    [unit-pos unit-hp]
-                                                                    [pos min-hp]))
-                            enemy-units)]
-        pos))))
-
-(defn find-target
-  "Returns the next tile the unit should move to."
-  [cavern start-pos target]
-  (let [choices (sort-by first (for [adjacent (adjacent start-pos)
-                                     :when (= \. (get-in cavern adjacent))]
-                                 [adjacent adjacent]))]
-    (loop [open (apply conj PersistentQueue/EMPTY choices)
-           closed #{}]
-      (let [[choice curr] (peek open)
-            open (pop open)
-            adjacent (sort-by first (for [adjacent (adjacent curr)
-                                          :when (not (closed adjacent))]
-                                      [adjacent (get-in cavern adjacent)]))]
-        (if (empty? open)
-          nil
-          (if (first (filter (fn [[_ tile]] (= target tile)) adjacent))
-            [choice curr]
-            (let [available-moves (keep (fn [[pos tile]] (if (= \. tile) [choice pos])) adjacent)]
+                                       (keep (fn [adj] (when (= \. (get-in cavern adj)) [choice adj]))))]
               (recur (apply conj open available-moves)
                      (conj closed curr)))))))))
 
 (defn move-unit
   "Moves the unit at pos to new pos."
   [{:keys [cavern units]} pos new-pos]
-  (let [unit (get-in cavern pos)
-        faction (units unit)
-        hp (faction pos)]
+  (let [unit-type (get-in cavern pos)
+        unit (units pos)]
     (->Battle (-> cavern
                   (assoc-in pos \.)
-                  (assoc-in new-pos unit))
-              (assoc units unit (-> faction
-                                    (dissoc pos)
-                                    (assoc new-pos hp))))))
+                  (assoc-in new-pos unit-type))
+              (-> (do units)
+                  (dissoc pos)
+                  (assoc new-pos unit)))))
 
 (defn attack
-  "`attacker` deals damage equal to `attack-power` to `defender`. `defender` is
-  removed from the battle if its remaining hit points are 0 or fewer."
-  [{:keys [cavern units]} attacker attack-power defender]
-  (let [defender-unit-type (get-in cavern defender)
-        defender-faction (units defender-unit-type)
-        defender-hp-before (defender-faction defender)
-        defender-hp-after (- defender-hp-before attack-power)
-        [cavern defender-faction-after] (if (>= 0 defender-hp-after)
-                                          [(assoc-in cavern defender \.) (dissoc defender-faction defender)]
-                                          [cavern (assoc defender-faction defender defender-hp-after)])]
-    (->Battle cavern (assoc units defender-unit-type defender-faction-after))))
+  [{:keys [cavern units]} target]
+  (let [{target-hp :hp} (units target)
+        remaining-hp (- target-hp attack-power)]
+    (if (<= remaining-hp 0)
+      (->Battle (assoc-in cavern target \.) (dissoc units target))
+      (->Battle cavern (update units target #(assoc % :hp remaining-hp))))))
 
 (defn move-if-enemy-not-in-range
-  [{:keys [cavern _] :as battle} pos target]
-  (if (not (enemy-in-range battle pos target))
-    (if-let [[destination _] (find-target cavern pos target)]
-      [(move-unit battle pos destination) destination]
+  [battle pos]
+  (if (nil? (find-target-in-range battle pos))
+    (if-let [new-pos (some->> pos
+                              (identify-targets battle)
+                              (identify-open-squares battle)
+                              (choose-next-step battle pos))]
+      [(move-unit battle pos new-pos) new-pos]
       [battle pos])
     [battle pos]))
 
 (defn attack-if-enemy-in-range
-  [[battle pos] target]
-  (if-let [target-pos (enemy-in-range battle pos target)]
-    (attack battle pos 3 target-pos)
+  [[battle pos]]
+  (if-let [target (find-target-in-range battle pos)]
+    (attack battle target)
     battle))
 
 (defn take-turn
-  "The unit at `pos` takes a turn."
-  [{:keys [cavern _] :as battle} pos]
-  (let [faction (get-in cavern pos)
-        target (case faction \E \G \G \E)]
-    (-> battle
-        (move-if-enemy-not-in-range pos target)
-        (attack-if-enemy-in-range target))))
+  "The unit at `pos` takes a turn. Returns nil if the battle is over."
+  [battle pos]
+  (when (not (empty? (identify-targets battle pos)))
+    (some-> battle
+            (move-if-enemy-not-in-range pos)
+            (attack-if-enemy-in-range))))
 
-;(defn simulate-battle
-;  "Simulates a battle from start to finish and returns the outcome."
-;  [{:keys [cavern units] :as battle}]
-;  (loop [all-units (sort (mapcat keys (vals units)))]
-;    (reduce (fn [battle unit]))))
+(defn take-all-turns
+  "The units in the battle all take their turns in sequence. If any unit is no
+  longer alive when its turn comes, its turn is skipped. Returns the resulting
+  state of the battle and a boolean representing whether the battle is over."
+  [{units :units :as battle}]
+  (let [turn-order (keys units)]
+    (reduce (fn [[{units :units :as battle} _] unit]
+              (if (contains? units unit)
+                (if-let [after (take-turn battle unit)]
+                  [after false]
+                  [battle true])
+                [battle false]))
+            [battle false]
+            turn-order)))
+
+(defn calculate-outcome
+  "Calculates the outcome of the battle."
+  [{units :units} rounds]
+  (let [sum-hit-points (apply + (map :hp (vals units)))]
+    (* sum-hit-points rounds)))
+
+(defn simulate-battle
+  "Simulates a battle from start to finish and returns the outcome."
+  [battle]
+  (loop [battle battle
+         round 0]
+    (let [[battle finished?] (take-all-turns battle)]
+      (if finished?
+        (calculate-outcome battle round)
+        (recur battle
+               (inc round))))))
