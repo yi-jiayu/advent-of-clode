@@ -38,7 +38,7 @@ public class Node {
     public Node insertAfter(int value) {
         Node left = this;
         Node right = this.next;
-        Node middle = new Node(this.head, value, left, right);
+        var middle = new Node(this.head, value, left, right);
         left.next = middle;
         right.prev = middle;
         return middle;

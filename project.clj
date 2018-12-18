@@ -6,7 +6,7 @@
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java" "test/java"]
   :test-paths ["test/clojure"]
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/math.combinatorics "0.1.4"]]
   :profiles {:dev {:plugins      [[lein-cloverage "1.0.13"]
                                   [lein-cljfmt "0.6.1"]]
