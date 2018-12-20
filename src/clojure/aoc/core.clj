@@ -17,3 +17,10 @@
   [n coll]
   (let [c (count coll)]
     (take c (drop (mod n c) (cycle coll)))))
+
+(defn enumerate2d
+  "Returns a lazy sequence consisting of [row col elem] for each element in matrix."
+  [matrix]
+  (apply concat (map-indexed (fn [n row]
+                               (map-indexed (fn [m val]
+                                              [n m val]) row)) matrix)))

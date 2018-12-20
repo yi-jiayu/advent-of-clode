@@ -1,6 +1,6 @@
 (ns aoc.year2018.day15
   (:require [clojure.string :as string]
-            [aoc.core :refer [adjacent]])
+            [aoc.core :refer [adjacent enumerate2d]])
   (:import (clojure.lang PersistentQueue)))
 
 (def ^:dynamic *debug* false)
@@ -16,13 +16,6 @@
 
 (defmethod print-method Unit [unit ^java.io.Writer w]
   (.write w (str "(->Unit " (:type unit) " " (:hp unit) ")")))
-
-(defn enumerate2d
-  "Returns a lazy sequence consisting of [row col elem] for each element in matrix."
-  [matrix]
-  (apply concat (map-indexed (fn [n row]
-                               (map-indexed (fn [m val]
-                                              [n m val]) row)) matrix)))
 
 (defn parse-cavern-map
   [input]
