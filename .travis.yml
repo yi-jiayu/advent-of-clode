@@ -1,4 +1,6 @@
 language: clojure
+jdk:
+  - openjdk11
 install:
   - lein deps
   - ./gradlew assemble
