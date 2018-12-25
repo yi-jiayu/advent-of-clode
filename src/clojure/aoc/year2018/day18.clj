@@ -41,8 +41,10 @@
 
 (defn transduce-area
   "Returns the state of an area after `n` minutes."
-  [n area]
-  (nth (iterate next-state-for-area area) n))
+  ([area]
+   (iterate next-state-for-area area))
+  ([area n]
+   (nth (transduce-area area) n)))
 
 (defn parse-input
   [input]
