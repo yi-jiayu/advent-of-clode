@@ -1,6 +1,13 @@
 (ns aoc.year2018.day18
   (:require [aoc.core :refer [vadd enumerate2d]]))
 
+(defn parse-input
+  [input]
+  (->> input
+       clojure.string/trim
+       clojure.string/split-lines
+       (mapv (partial into []))))
+
 (defn surrounding-tiles
   "Returns the coordinates of the 8 tiles surrounding `position`."
   [position]
@@ -46,9 +53,52 @@
   ([area n]
    (nth (transduce-area area) n)))
 
-(defn parse-input
-  [input]
-  (->> input
-       clojure.string/trim
-       clojure.string/split-lines
-       (mapv (partial into []))))
+(defn find-repetition
+  [f x0]
+  (loop [tortoise (f x0)
+         hare (f (f x0))]
+    (if (= tortoise hare)
+      tortoise
+      (recur (f tortoise)
+             (f (f hare))))))
+
+(defn find-mu
+  [f x0 hare]
+  (loop [mu 0
+         tortoise x0
+         hare hare]
+    (if (= tortoise hare)
+      [mu tortoise]
+      (recur (inc mu)
+             (f tortoise)
+             (f hare)))))
+
+(defn find-lambda
+  [f tortoise]
+  (loop [lambda 1
+         hare (f tortoise)]
+    (if (= tortoise hare)
+      lambda
+      (recur (inc lambda)
+             (f hare)))))
+
+(defn floyd
+  [f x0]
+  (let [hare (find-repetition f x0)
+        [mu tortoise] (find-mu f x0 hare)
+        lambda (find-lambda f tortoise)]
+    [mu lambda]))
+
+(defn find-first-repetition-and-cycle-time
+  [area]
+  (floyd next-state-for-area area))
+
+(defn transduce-optimised
+  "Returns the state of area after `n` time steps for large n by first finding
+  a cycle."
+  [area n]
+  (let [[first-repetition cycle-time] (find-first-repetition-and-cycle-time area)]
+    (if (< n first-repetition)
+      (transduce-area area n)
+      (let [parity (rem (- n first-repetition) cycle-time)]
+        (transduce-area area (+ first-repetition parity))))))

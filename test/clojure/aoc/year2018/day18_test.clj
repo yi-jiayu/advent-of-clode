@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [aoc.year2018.day18 :refer :all]))
 
+(def example-input ".#.#...|#.\n.....#|##|\n.|..|...#.\n..|#.....#\n#.#|||#|#|\n...#.||...\n.|....|...\n||...#|.#|\n|.||||..|.\n...#.|..|.")
 (def input (slurp (clojure.java.io/resource "year2018/day18.txt")))
 
 (deftest surrounding-tiles-test
@@ -90,3 +91,20 @@
                           [\| \| \. \. \. \# \| \. \# \|]
                           [\| \. \| \| \| \| \. \. \| \.]
                           [\. \. \. \# \. \| \. \. \| \.]] 10))))
+
+(deftest find-first-repetition-and-cycle-time-test
+  (is (= [18 1] (find-first-repetition-and-cycle-time (parse-input example-input)))))
+
+(deftest transduce-optimised-test
+  (let [area (parse-input example-input)]
+    (is (= [[\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]
+            [\. \. \. \. \. \. \. \. \. \.]]
+           (transduce-optimised area 10000)))))
