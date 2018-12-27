@@ -1,63 +1,39 @@
-(ns aoc.year2018.day16
-  (:require [clojure.spec.alpha :as s]))
-
-(s/def ::register? (s/int-in 0 4))
-(s/def ::registers? (s/coll-of integer? :count 4))
+(ns aoc.year2018.day16)
 
 (defmacro binoprr
   [name op doc]
-  (list 'do
-        (list 'defn name
-              doc
-              '[regs a b c]
-              (list 'assoc 'regs 'c (list op '(regs a) '(regs b))))
-        (list 's/fdef name
-              :args '(s/cat :regs ::registers? :a ::register? :b ::register? :c ::register?)
-              :ret ::registers?)))
+  (list 'defn name
+        doc
+        '[regs a b c]
+        (list 'assoc 'regs 'c (list op '(regs a) '(regs b)))))
 
 (defmacro binopir
   [name op doc]
-  (list 'do
-        (list 'defn name
-              doc
-              '[regs a b c]
-              (list 'assoc 'regs 'c (list op 'a '(regs b))))
-        (list 's/fdef name
-              :args '(s/cat :regs ::registers? :a integer? :b ::register? :c ::register?)
-              :ret ::registers?)))
+  (list 'defn name
+        doc
+        '[regs a b c]
+        (list 'assoc 'regs 'c (list op 'a '(regs b)))))
 
 (defmacro binopri
   [name op doc]
-  (list 'do
-        (list 'defn name
-              doc
-              '[regs a b c]
-              (list 'assoc 'regs 'c (list op '(regs a) 'b)))
-        (list 's/fdef name
-              :args '(s/cat :regs ::registers? :a ::register? :b integer? :c ::register?)
-              :ret ::registers?)))
+  (list 'defn name
+        doc
+        '[regs a b c]
+        (list 'assoc 'regs 'c (list op '(regs a) 'b))))
 
 (defmacro unopr
   [name op doc]
-  (list 'do
-        (list 'defn name
-              doc
-              '[regs a _ c]
-              (list 'assoc 'regs 'c (list op '(regs a))))
-        (list 's/fdef name
-              :args '(s/cat :regs ::registers? :a ::register? :b any? :c ::register?)
-              :ret ::registers?)))
+  (list 'defn name
+        doc
+        '[regs a _ c]
+        (list 'assoc 'regs 'c (list op '(regs a)))))
 
 (defmacro unopi
   [name op doc]
-  (list 'do
-        (list 'defn name
-              doc
-              '[regs a _ c]
-              (list 'assoc 'regs 'c (list op 'a)))
-        (list 's/fdef name
-              :args '(s/and (s/cat :regs ::registers? :a integer? :b any? :c ::register?))
-              :ret ::registers?)))
+  (list 'defn name
+        doc
+        '[regs a _ c]
+        (list 'assoc 'regs 'c (list op 'a))))
 
 (binoprr addr +'
   "addr (add register) stores into register C the result of adding register A
