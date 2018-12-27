@@ -55,17 +55,36 @@
   (is (= [1 1] (index-to-coord 3 4 2 1 4))))
 
 (deftest calculate-power-levels-test
-  (is (= '((4 -5 -4)
-            (-4 -2 -1)
-            (-2 0 1))
+  (is (= [[4 -5 -4]
+          [-4 -2 -1]
+          [-2 0 1]]
          (calculate-power-levels 3 8199)))
-  (is (= '((4 -5 -4 -3)
-            (-4 -2 -1 0)
-            (-2 0 1 3)
-            (0 2 4 -5))
+  (is (= [[4 -5 -4 -3]
+          [-4 -2 -1 0]
+          [-2 0 1 3]
+          [0 2 4 -5]]
          (calculate-power-levels 4 8199))))
 
+(deftest find-highest-power-3x3-region-test
+  (is (= [2 [1 1]] (find-highest-power-3x3-region 4 8199)))
+  (is (= [30 [21 61]] (find-highest-power-3x3-region 300 42)))
+  (is (= [28 [235 87]] (find-highest-power-3x3-region 300 8199))))
+
+(deftest build-summed-area-table-test
+  (is (= [[4 -1 -5 -8]
+          [0 -7 -12 -15]
+          [-2 -9 -13 -13]
+          [-2 -7 -7 -12]]
+         (build-summed-area-table 4 8199))))
+
+(deftest calculate-region-total-power-test
+  (let [table [[4 -1 -5 -8]
+               [0 -7 -12 -15]
+               [-2 -9 -13 -13]
+               [-2 -7 -7 -12]]]
+    (is (= -7 (calculate-region-total-power table 0 0 2)))
+    (is (= -13 (calculate-region-total-power table 0 0 3)))
+    (is (= -2 (calculate-region-total-power table 1 1 2)))))
+
 (deftest find-highest-power-region-test
-  (is (= [2 [1 1]] (find-highest-power-region 4 8199)))
-  (is (= [30 [21 61]] (find-highest-power-region 300 42)))
-  (is (= [28 [235 87]] (find-highest-power-region 300 8199))))
+  (is (= [12 [0 4 3]] (find-highest-power-region 10 18))))

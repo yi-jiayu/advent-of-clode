@@ -1,4 +1,5 @@
-(ns aoc.year2018.day11)
+(ns aoc.year2018.day11
+  (:require [aoc.core :refer [vadd]]))
 
 (defn get-hundreds-digit
   "Returns the 100s digit of `x`"
@@ -52,7 +53,7 @@
     (partition size (for [x (range size) y (range size)]
                       (memoized-calculate-power-level x y)))))
 
-(defn find-highest-power-region
+(defn find-highest-power-3x3-region
   "Finds the top-left coordinate of the 3x3 region with the highest total power in a grid."
   [size serial-number]
   (let [[_ max-power max-index] (reduce (fn [[index max-power max-index] next] (if (> next max-power)
@@ -61,3 +62,39 @@
                                         [0 0 0]
                                         (convolve (partial apply +) 3 1 (calculate-power-levels size serial-number)))]
     [max-power (index-to-coord size size 3 1 max-index)]))
+
+(defn build-summed-area-table
+  "Build a summed-area table for the power grid."
+  [grid-size serial-number]
+  (let [power-levels (calculate-power-levels grid-size serial-number)
+        rowwise-cumulative-sums (map (partial reductions +) power-levels)]
+    (reduce (fn [summed-area-table rowwise-sum]
+              (conj summed-area-table (vadd rowwise-sum (last summed-area-table))))
+            [(first rowwise-cumulative-sums)]
+            (rest rowwise-cumulative-sums))))
+
+
+(defn calculate-region-total-power
+  "Returns the sum of all power cells in the region between top-left and top-right."
+  [summed-area-table row col size]
+  (let [x0 (dec col)
+        y0 (dec row)
+        x1 (+ x0 size)
+        y1 (+ y0 size)
+        I (fn [x y] (or (get-in summed-area-table [x y]) 0))]
+    (+ (I x0 y0) (I x1 y1) (- (I x0 y1)) (- (I x1 y0)))))
+
+(defn find-highest-power-region
+  "Finds the top-left coordinate and size of the region with the highest total power in a grid."
+  [grid-size serial-number]
+  (let [table (build-summed-area-table grid-size serial-number)]
+    (reduce (fn [[curr-max xys] [x y size]]
+              (let [curr (calculate-region-total-power table y x size)]
+                (if (> curr curr-max)
+                  [curr [x y size]]
+                  [curr-max xys])))
+            [Integer/MIN_VALUE nil]
+            (for [size (range 2 (inc grid-size))
+                  x (range (inc (- grid-size size)))
+                  y (range (inc (- grid-size size)))]
+              [x y size]))))
