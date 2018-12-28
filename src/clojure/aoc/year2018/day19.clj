@@ -56,12 +56,24 @@
         (assoc :registers regs'))))
 
 (defn run-program
-  [{:keys [ip-binding program]}]
-  (let [state {:ip-binding ip-binding
-               :ip         0
-               :registers  [0 0 0 0 0 0]}]
-    (loop [state state]
-      (let [{ip :ip} state]
-        (if-let [next-instr (get program ip)]
-          (recur (execute-instruction state next-instr))
-          state)))))
+  ([input]
+   (run-program input 0 [0 0 0 0 0 0]))
+  ([{:keys [ip-binding program]} ip registers]
+   (let [state {:ip-binding ip-binding
+                :ip         ip
+                :registers  registers}]
+     (loop [state state]
+       (let [{ip :ip} state]
+         (if (= ip 3)
+           (let [[A B C] (:registers state)
+                 F B
+                 D (* C F)
+                 A (if (and (not (zero? C)) (zero? (rem B C))) (+ A C) A)
+                 ip 12
+                 registers [A B C D ip F]]
+             (recur (-> state
+                        (assoc :ip ip)
+                        (assoc :registers registers))))
+           (if-let [next-instr (get program ip)]
+             (recur (execute-instruction state next-instr))
+             state)))))))
