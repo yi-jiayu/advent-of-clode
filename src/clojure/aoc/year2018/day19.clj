@@ -64,16 +64,14 @@
                 :registers  registers}]
      (loop [state state]
        (let [{ip :ip} state]
-         (if (= ip 3)
-           (let [[A B C] (:registers state)
-                 F B
-                 D (* C F)
-                 A (if (and (not (zero? C)) (zero? (rem B C))) (+ A C) A)
-                 ip 12
-                 registers [A B C D ip F]]
-             (recur (-> state
-                        (assoc :ip ip)
-                        (assoc :registers registers))))
-           (if-let [next-instr (get program ip)]
-             (recur (execute-instruction state next-instr))
-             state)))))))
+         (if-let [next-instr (get program ip)]
+           (recur (execute-instruction state next-instr))
+           state))))))
+
+(defn factorise
+  "Returns all the factors of `n`."
+  [n]
+  (->> n
+       inc
+       (range 1)
+       (filter #(zero? (rem n %)))))
