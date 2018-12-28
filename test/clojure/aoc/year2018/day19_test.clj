@@ -73,11 +73,7 @@
 (deftest run-program-test
   (is (= {:ip-binding 0
           :ip         7
-          :registers  [6 5 6 0 0 9]} (run-program (parse-input example-input))))
-  (is (= {:ip         257
-          :ip-binding 4
-          :registers  [912 911 912 1 256 912]} (run-program (parse-input input)))))
+          :registers  [6 5 6 0 0 9]} (run-program (parse-input example-input)))))
 
 (deftest factorise-test
-  (is (= [1 2 3 6] (factorise 6)))
-  (is (= 10576224 (apply + (factorise 10551311)))))
+  (is (= [1 2 3 6] (factorise 6))))
